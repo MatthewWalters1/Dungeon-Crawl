@@ -152,7 +152,7 @@ int main() {
 	pc.exheight = 1;
 	//this vector is pushed into the dead vector of vectors when resetting it
 	vector<int> rooms;
-	//this matrix is used to indicate whether a room has a living monster, an obsticle, and the final boss of the dungeon
+	//this matrix is used to indicate whether a room has a living monster, an obstacle, and the final boss of the dungeon
 	vector<vector<int> > dead;
 	//this matrix is used to hold the positions of the obsticles if the same dungeon has to be reset, since you want the obsticles to stay where they were
 	vector<vector<bool> > obst;
@@ -1117,8 +1117,8 @@ void intro(player &pc) {
 	}
 	do {
 		cout << "What is your class? (easy: fighter, spell-slinger, dark-knight)\n";
-		cout << "                    (moderate: wizard, knight, thief, bard)\n";
-		cout << "                    (advanced: witch, duelist, shinobi)\n";
+		cout << "                    (moderate: knight, thief, bard, duelist)\n";
+		cout << "                    (advanced: wizard, witch, shinobi)\n";
 		cin >> pc.character;
 		cout << '\n';
 	} while (pc.character != "wizard" && pc.character != "knight" && pc.character != "thief" && pc.character != "spell-slinger" && pc.character != "fighter" && pc.character != "dark-knight" && pc.character != "witch" && pc.character != "duelist" && pc.character != "shinobi" && pc.character != "bard");
