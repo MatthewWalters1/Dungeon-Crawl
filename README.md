@@ -16,12 +16,19 @@ if your terminal supports the "color" command, it will turn black with green cha
 	[X] [X] [X] [O] [-]
 	[-] [-] [#] [-] [-]
 	[-] [-] [-] [-] [-]
+	
 	X : a room where you have already been, and killed the monster
+	
 	O : where you are currently
+	
 	- : a space you have yet to explore
+	
 	# : a space that cannot be entered, it is an obsticle in your path
+	
 	the final boss of each floor will be found somewhere along the furthest column to the right, and you will start in the top left corner of the dungeon
+	
 	you -> [O] [-] [#] [-] [-] <- boss?
+	
 	       [-] [-] [-] [-] [-] <- boss?
          
   Outside of combat, you have lots of options, which will look something like this:
