@@ -52,6 +52,8 @@ struct monster {
 	string type;
 	//this is the attack type the player should use to take the least amount of damage
 	char bestAttack;
+	//this is a bool for whether it's singular (1) or plural (0)
+	bool singular;
 };
 class cell {
 	public:
@@ -893,7 +895,12 @@ void levelUp(vector<vector<int> > &dungeon, int &killGoal, char &filler, player 
 	buildDungeon(dungeon, killGoal, m, pc);
 	string twine = m.type;
 	twine.pop_back();
-	cout << "You use the essense of" << twine << " to grow stronger.\n";
+	if (m.singular) {
+		cout << "You use the soul of" << twine << " to grow stronger.\n";
+	}
+	else {
+		cout << "You use the souls of" << twine << " to grow stronger.\n";
+	}
 	cout << "  _________________________________________________________________\n";
 	cout << " /                                                                 \\\n"; 
 	cout << "|                                                                   |\n";
@@ -1409,6 +1416,7 @@ void monsterLibrary(player &pc, monster &m, int newNum) {
 	if (newNum == 3) {
 		newNum = rand() % 3;
 	}
+	m.singular = 1;
 	if (pc.level == 1) {
 		switch (m.damage) {	
 			case 0:
@@ -1607,6 +1615,7 @@ void monsterLibrary(player &pc, monster &m, int newNum) {
 			case 7:
 				m.type = " an undead horde";
 				m.bestAttack = 'b';
+				m.singular = 0;
 				break;
 			case 8:
 			case 9:
@@ -1618,6 +1627,7 @@ void monsterLibrary(player &pc, monster &m, int newNum) {
 				if (newNum == 0) {
 					m.type = " the Orc Squadron!";
 					m.bestAttack = 's';
+					m.singular = 0;
 				}
 				else if (newNum == 1) {
 					m.type = " the Dragon!";
@@ -1626,6 +1636,7 @@ void monsterLibrary(player &pc, monster &m, int newNum) {
 				else {
 					m.type = " the Army of Sorcerers!";
 					m.bestAttack = 'm';
+					m.singular = 0;
 				}
 				break;
 		}
@@ -1700,6 +1711,7 @@ void monsterLibrary(player &pc, monster &m, int newNum) {
 			case 1:
 				m.type = " a squadron of orcs";
 				m.bestAttack = 's';
+				m.singular = 0;
 				break;
 			case 2:
 				m.type = " a drider";
@@ -1724,6 +1736,7 @@ void monsterLibrary(player &pc, monster &m, int newNum) {
 			case 7:
 				m.type = " an army of sorcerers";
 				m.bestAttack = 'm';
+				m.singular = 0;
 				break;
 			case 8:
 				m.type = " a shoggti";
@@ -1738,6 +1751,7 @@ void monsterLibrary(player &pc, monster &m, int newNum) {
 				if (newNum == 0) {
 					m.type = " the Horde of Trolls!";
 					m.bestAttack = 's';
+					m.singular = 0;
 				}
 				else if (newNum == 1) {
 					m.type = " the Elder Dragon!";
@@ -1798,6 +1812,7 @@ void monsterLibrary(player &pc, monster &m, int newNum) {
 				if (newNum == 0) {
 					m.type = " the Werewolf Pack!";
 					m.bestAttack = 's';
+					m.singular = 0;
 				}
 				else if (newNum == 1) {
 					m.type = " the Ancient Wyrm!";
@@ -1836,6 +1851,7 @@ void monsterLibrary(player &pc, monster &m, int newNum) {
 			case 5:
 				m.type = " a horde of trolls";
 				m.bestAttack = 's';
+				m.singular = 0;
 				break;
 			case 6:
 				m.type = " an irlgaunt";
@@ -1880,6 +1896,7 @@ void monsterLibrary(player &pc, monster &m, int newNum) {
 			case 1:
 				m.type = " an undead army";
 				m.bestAttack = 'b';
+				m.singular = 0;
 				break;
 			case 2:
 				m.type = " a harpy queen";
@@ -1896,6 +1913,7 @@ void monsterLibrary(player &pc, monster &m, int newNum) {
 			case 5:
 				m.type = " a werewolf pack";
 				m.bestAttack = 's';
+				m.singular = 0;
 				break;
 			case 6:
 				m.type = " an ifrit";
