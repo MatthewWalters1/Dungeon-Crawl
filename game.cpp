@@ -1308,7 +1308,7 @@ void damageCalc(char &attackType, bool &disc, bool &sod, bool &soa, bool &boh, b
 		if (pc.race == "dwarf") {
 			m.damage /= 3;
 		}
-	else {
+		else {
 			m.damage /= 2;
 		}
 		cout << '\n' << "It's super effective!\n" << '\n';
@@ -1331,7 +1331,7 @@ void damageCalc(char &attackType, bool &disc, bool &sod, bool &soa, bool &boh, b
 	}
 	if (attackType == 'f' && pc.classKit1 > 0) {
 		m.damage /= 8;
-		if (sodestiny && boheroes && soargon) m.damage /= 4;
+		if (sodestiny && boheroes && soargon && pc.level > 4) m.damage /= 4;
 		cout << '\n' << "You cast Fire Ball!\n\n";
 		pc.classKit1 -= 1;
 		cout << "Spell slots remaining: " << pc.classKit1 << '\n';
@@ -1348,7 +1348,7 @@ void damageCalc(char &attackType, bool &disc, bool &sod, bool &soa, bool &boh, b
 	else if (attackType == 'i' && pc.classKit2 < 1 && pc.character == "wizard") {
 		cout << '\n' << "You don't have any more high spell slots!\n";
 	}
-	if ((attackType == 'h' && pc.character == "thief" && pc.classKit1 > 0) || pc.strongAttack == 'n') {
+	if (attackType == 'h' && pc.character == "thief" && pc.classKit1 > 0) {
 		pc.classKit1 -= 1;
 		m.damage = 0;
 		cout << '\n' << "You sneak attack the monster!\n";
@@ -1358,7 +1358,7 @@ void damageCalc(char &attackType, bool &disc, bool &sod, bool &soa, bool &boh, b
 		cout << '\n' << "You rush the monster!\n";
 		pc.classKit1 -= 1;
 		killCount += pc.level;
-		m.damage *= 2;
+		m.damage = (m.damage * 2) - pc.level;
 		if (pc.race == "elf") {
 			cout << "You can power attack " << pc.classKit1 << " more times\n";
 		}
@@ -1368,7 +1368,7 @@ void damageCalc(char &attackType, bool &disc, bool &sod, bool &soa, bool &boh, b
 	}
 	if (attackType == 'k' && ((pc.character == "witch" && pc.classKit2 > 0) || (pc.character == "shinobi" && pc.classKit1 > 0))) {
 		m.damage /= 8;
-		if (sodestiny && boheroes && soargon) m.damage /= 4;
+		if (sodestiny && boheroes && soargon && pc.level > 4) m.damage /= 4;
 		if (pc.character == "witch") {
 			pc.classKit2 -= 1;
 			cout << '\n' << "You poison the monster!\n";
