@@ -499,6 +499,8 @@ def getOptions(pc, row, col, dungeon):
     return options
 
 def preAttack(pc, m, disc, upgrades):
+    if (m.damage == 10):
+        m.damage = 15
     m.damage = m.damage * 2 * pc.level
     print("It's", m.name, end='')
     cap = False
@@ -868,7 +870,7 @@ def main():
                 #check if the monster is the boss, for the while loop, so they can level up
                 isBoss = m.monsterLibrary(level, dungeon[row][col], bossType)
                 #check if the monster is any type of boss, so we can handle item discovery
-                if (m.damage == 10 or m.damage == 100) and disc != True:
+                if (m.damage == 10) and disc != True:
                     if(m.weakness == 's' and upgrades[3] != 1):
                         upgrades[0] = 1
                         disc = True
