@@ -354,6 +354,7 @@ class player:
         elif (self.pclass == "witch"):
             choices = ['h','k']
             self.increase = ''
+            print("Would you like to increase your Potions(h) or Poisons(k)?")
             while (self.increase not in choices):
                 self.increase = input()
                 if (self.increase not in choices):
@@ -437,8 +438,9 @@ def buildDungeon(pc):
     num = np.random.randint(1, pc.level + 1)
     dungeon[num][pc.killGoal - 1] = 100
     #randomly generate obsticles in the dungeon, don't allow them to form on the left column, right column, or bottom row
-    for i in range(0,pc.level):
-        dungeon[i][np.random.randint(1,pc.killGoal-1)] = -50
+    for i in range(0, int(pc.level/2) + 1):
+        for j in range(0, pc.level):
+            dungeon[j][np.random.randint(1,pc.killGoal-1)] = -50
 
     return dungeon
 
@@ -454,7 +456,7 @@ def printDungeon(dungeon, row, col, level, killGoal):
                 print("X", end='')
             else:
                 print("-", end='')
-            print("]", end='')
+            print("] ", end='')
         print()
     return
 
@@ -793,9 +795,6 @@ def main():
     row = 0
     col = 0
     
-    #random seed
-    np.random.seed(42)
-    
     #big bits of text, character creation, description of the game's processes
     pc.intro()
     pc.setup()
@@ -832,7 +831,7 @@ def main():
         ## plus, if they find a boss monster (space == 10) prior to the final fight (space == 100), then force it to not be the same as the final fight
         bossType = np.random.randint(0,3)
         m.monsterLibrary(level, 100, bossType)
-        print("To defeat the dungeon, first traverse this floor and defeat", m.name + '!')
+        print("To defeat the dungeon, traverse this floor and defeat", m.name + '!')
         isBoss = False
         while (isBoss == False):
             pc.printHP()
@@ -900,6 +899,8 @@ def main():
                     continue
                 print("You take", damage, "damage.")
                 pc.HP -= damage
+                if (isBoss):
+                    pc.printHP()
                 
                 ### The Player Has Died
                 if (pc.HP <= 0):
