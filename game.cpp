@@ -1165,15 +1165,26 @@ void intro(player &pc) {
 	else if (pc.character == "duelist") {
 		pc.strongAttack = 's';
 		pc.classKit1 = 2;
+		if (pc.race == "elf") {
+			pc.classKit1 += 1;
+		}
 		cout << "As a duelist, you are skilled with a sword, and can counter enemies for a chance to take no damage.\n";
 		cout << "To counter attack, enter c during a fight.\n\n";
 	}
 	else if (pc.character == "shinobi") {
 		pc.strongAttack = 'b';
 		pc.classKit1 = 1;
+		if (pc.race == "elf") {
+			pc.classKit1 += 1;
+		}
 		cout << "As a shinobi, you are skilled with a bow, and can always escape a fight back to the entrance of the dungeon (enter e during a fight).\n";
-		cout << "To use your shinobi escape, you are required to rest.\n";
-		cout << "Once per rest, you can stealth attack an enemy (enter k during a fight) to mitigate damage.\n\n";
+		cout << "To use your shinobi escape, you are required to flee back to the beginning of the floor.\n";
+		if (pc.race != "elf") {
+			cout << "Once per rest, you can stealth attack an enemy (enter k during a fight) to mitigate damage.\n\n";
+		}
+		else {
+			cout << "Twice per rest, you can stealth attack an enemy (enter k during a fight) to mitigate damage.\n\n";
+		}
 	}
 	else if (pc.character == "wizard") {
 		pc.strongAttack = 'm';
@@ -1191,16 +1202,32 @@ void intro(player &pc) {
 		pc.strongAttack = 's';
 		pc.classKit1 = 1;
 		pc.classKit2 = 0;
+		if (pc.race == "elf") {
+			pc.classKit1 += 1;
+		}
 		pc.maxHP += 4;
 		pc.HP = pc.maxHP;
 		cout << "As a knight, you are very hardy, you have a little more HP than other classes, and you are much stronger with a sword\n\n";
-		cout << "Once per rest, you can power attack your enemy (enter p during a fight), ";
+		if (pc.race == "elf") {
+			cout << "Once per rest, you can power attack your enemy (enter p during a fight), ";
+		}
+		else {
+			cout << "Twice per rest, you can power attack, your enemy (enter p during a fight), ";
+		}
 		cout << "taking more damage, but you will progress more than one space in the direction you were moving.\n\n";
 	}
 	else if (pc.character == "thief") {
 		pc.strongAttack = 'b';
 		pc.classKit1 = 1;
-		cout << "As a thief, you are skilled with a bow and hard to detect, once per rest, you can sneak attack an enemy, taking zero damage in the fight\n\n";
+		if (pc.race == "elf") {
+			pc.classKit1 += 1;
+		}
+		if (pc.race != "elf") {
+			cout << "As a thief, you are skilled with a bow and hard to detect, once per rest, you can sneak attack an enemy, taking zero damage in the fight\n\n";
+		}
+		else {
+			cout << "As a thief, you are skilled with a bow and hard to detect, twice per rest, you can sneak attack an enemy, taking zero damage in the fight\n\n";
+		}
 		cout << "To sneak attack, enter h during a fight.\n\n";
 	}
 	else if (pc.character == "spell-slinger") {
@@ -1218,10 +1245,7 @@ void intro(player &pc) {
 		pc.strongAttack2 = 'm';
 		cout << "As a dark-knight, you are quite skilled with the sword and magic attacks.\n\n";
 	}
-	if (pc.race == "elf" && pc.character != "wizard") {
-		pc.classKit1 += 1;
-		pc.maxh += 1;
-	}
+
 }
 void buildDungeon(vector<vector<int> > &dungeon, int &killGoal, monster &m, player &pc) {
 	dungeon.clear();
