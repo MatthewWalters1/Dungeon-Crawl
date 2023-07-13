@@ -1,4 +1,4 @@
-import numpy as np
+import random
 import os
 
 filler = '='
@@ -45,8 +45,8 @@ class player:
         self.level = 1
         #player's one time heal per floor
         self.potion = True
-        #final score, decreases by 100 per wrong attack, increases by 1000 per level up (x2 in normal mode, x3 in hard mode)
-        self.finscore = 10000
+        #final score, decreases by 50 per wrong attack, increases by 1000 per level up (x2 in normal mode, x3 in hard mode)
+        self.finscore = 0
         #player's kill count, this is your xp (monster essenses), which count up until you reach the goal or camp, it modifies how much you heal when you camp or flee
         self.killCount = 0
         #the level to reach for the game to end
@@ -73,9 +73,7 @@ class player:
 
     #print the player's score, name, level, a health bar, and their numeric HP/maxHP
     def printHP(self):
-        score = self.finscore - (10000 - 1000*(self.level - 1))
-        score *= self.diffRating
-        print("Score:", score)
+        print("Score:", self.finscore)
         print(self.name, "[" + str(self.level) + "] :", end='')
         HP = self.HP / self.maxHP * 80
         print("[", end='')
@@ -89,8 +87,6 @@ class player:
     
     #The player has either reached endgame, or chose to end the game early, printing their final score
     def gameOver(self):
-        score = self.finscore - (10000 - 1000*(self.level - 1))
-        score *= self.diffRating
         if (self.level != self.endgame):
             print("  _________________________________________________________________")
             print(" /                                                                 \\")
@@ -106,13 +102,13 @@ class player:
             print("|                                                                   |")
             print(" \\_________________________________________________________________/")
         print()
-        print("YOUR FINAL SCORE:", score)
+        print("YOUR FINAL SCORE:", self.finscore)
         return
     
     #the player heals a significant amount of HP, this can go beyond their maxHP, if they died, the dungeon gets re-built, 
     ## otherwise, it just resets
     def rest(self, scorehit):
-        self.finscore -= scorehit
+        self.finscore -= scorehit * self.diffRating
         self.HP += self.killCount * 6 * self.level
         if (self.HP < self.maxHP):
             self.HP = self.maxHP
@@ -322,6 +318,7 @@ class player:
         self.HP = self.maxHP
         self.killGoal += 2
         self.killCount = 0
+        self.finscore += 1000 * self.diffRating
 
         ### class kit stuff
         #wizard
@@ -456,9 +453,9 @@ class monster:
         if level <= 5 and damage != 100:
             jindex = int(jindex/2)
         if damage == 10:
-            boss = np.random.randint(0,3)
+            boss = random.randint(0,2)
             while (boss == bossType):
-                boss = np.random.randint(0,3)
+                boss = random.randint(0,2)
             jindex += boss
         elif damage == 100:
             damage = 10
@@ -481,16 +478,16 @@ def buildDungeon(pc):
     for i in range(0, pc.level + 1):
         b = []
         for j in range(0, pc.killGoal):
-            b.append(np.random.randint(1,11))
+            b.append(random.randint(1,10))
         dungeon.append(b)
     dungeon[0][0] = -1
     #make one random square at the end of the level into a boss
-    num = np.random.randint(1, pc.level + 1)
+    num = random.randint(1, pc.level)
     dungeon[num][pc.killGoal - 1] = 100
     #randomly generate obsticles in the dungeon, don't allow them to form on the left column, right column, or bottom row
     for i in range(0, int(pc.level/2) + 1):
         for j in range(0, pc.level):
-            dungeon[j][np.random.randint(1,pc.killGoal-1)] = -50
+            dungeon[j][random.randint(1,pc.killGoal-2)] = -50
 
     return dungeon
 
@@ -638,7 +635,7 @@ def calcDamage(pc, m, attackType, upgrades):
                 damage /= 2
         else:
             print("Not very effective...\n")
-            pc.finscore -= 50
+            pc.finscore -= 50 * pc.diffRating
         if (upgrades[basics.index(attackType) + 3] == 1):
             damage /= 2
     else:
@@ -676,7 +673,7 @@ def calcDamage(pc, m, attackType, upgrades):
                 print("You assassinate the monster!")
                 print("You can stealth attack", pc.classKit1, "more monsters.")
         elif (attackType == 'c'):
-            chance = np.random.randint(0,pc.level)
+            chance = random.randint(0,pc.level - 1)
             if (chance != 2):
                 damage = 0
                 print("You counter attack the monster!")
@@ -890,7 +887,7 @@ def main():
         dungeon = buildDungeon(pc)
         #determine the boss type, so that you can tell the player their intended final fight for the level,
         ## plus, if they find a boss monster (space == 10) prior to the final fight (space == 100), then force it to not be the same as the final fight
-        bossType = np.random.randint(0,3)
+        bossType = random.randint(0,2)
         m.monsterLibrary(level, 100, bossType)
         print("To defeat the dungeon, traverse this floor and defeat", m.name + '!')
         isBoss = False
@@ -922,7 +919,7 @@ def main():
                     col -= 1
                 elif (gameState == 'r'):
                     col += 1
-                #if they've already killed a monster in a particular room, don't continue the loop, because the rest of this loop is Combat
+                #if they've already killed a monster in a particular room, reset the loop, because the rest of this loop is Combat
                 if (dungeon[row][col] < 0 and dungeon[row][col] != -50):
                     print("The monster here is already dead.")
                     continue
