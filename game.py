@@ -1021,6 +1021,7 @@ def main():
                 
                 ### The Player Has Died
                 if (pc.HP <= 0):
+                    isBoss = False
                     os.system("color 0C")
                     quitter = pc.youDied()
                     if (quitter):
