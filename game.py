@@ -73,9 +73,9 @@ class player:
         self.maxh = 0
         self.maxk = 0
 
-    #print the player's score, name, level, a health bar, and their numeric HP/maxHP
+    #print the player's score, name, level, race, class, a health bar, and their numeric HP/maxHP
     def printHP(self):
-        print("Score:", self.finscore)
+        print("\nScore:", self.finscore)
         race = ''
         for char in range(len(self.race)):
             if char == 0:
