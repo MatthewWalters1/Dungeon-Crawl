@@ -4,6 +4,7 @@ import time
 
 filler = '='
 classlist = ['fighter', 'spell-slinger', 'dark-knight', 'knight', 'thief', 'bard', 'duelist', 'wizard', 'witch', 'shinobi']
+raceList = ['elf', 'dwarf', 'human', 'orc']
 monList = [
     ["a ghost", "a death vulture", "a goblin", "a zombie", "an ogre", "a Troll", "a Saber Leopard", "a Wraith"],
     ["a ghoul", "an oozing mass", "an orc fighter", "a banshee", "a giant", "an Orc Commander", "a Cyclops", "a Witch"],
@@ -75,9 +76,21 @@ class player:
     #print the player's score, name, level, a health bar, and their numeric HP/maxHP
     def printHP(self):
         print("Score:", self.finscore)
-        print(self.name, "[" + str(self.level) + "] :", end='')
+        race = ''
+        for char in range(len(self.race)):
+            if char == 0:
+                race += self.race[char].upper()
+            else:
+                race += self.race[char]
+        pclass = ''
+        for char in range(len(self.pclass)):
+            if char == 0:
+                pclass += self.pclass[char].upper()
+            else:
+                pclass += self.pclass[char]
+        print(self.name, "[ Level", self.level, race, pclass, "] :")
         HP = self.HP / self.maxHP * 80
-        print("[", end='')
+        print("HP: [", end='')
         for i in range(80):
             if i < HP:
                 print("=", end='')
@@ -117,7 +130,7 @@ class player:
         self.killCount = 0
 
         if (scorehit != 1000):
-            print("You flee the dungeon and rest, using your monster essenses to regain your strength...")
+            print("You flee the dungeon and rest,\n using your monster essenses to regain your strength...")
         else:
             print("And, it appears the dungeon has shifted...")
         return 
@@ -129,14 +142,14 @@ class player:
         time.sleep(3)
         print("Matthew Walters' original game...")
         time.sleep(3)
-        print(" ___                                          ____                     _   ")
-        print("|   \  _  _  _ _    __ _   ___  ___  _ _     /  __| _ _  __ _ __ __ __| |  ")
-        print("| |) || || || ' \  / _` | / -_)/ _ \| ' \    | (__ | '_|/ _` |\ V  V /| |  ")
-        print("|___/  \_,_||_||_| \__, | \___|\___/|_||_|    \___||_|  \__,_| \_/\_/ |_|  ")
-        print("                    |___/                                                  ")
-        for i in range(3):
-            print("__________________________________________________________________________")
-            time.sleep(1)
+        print("  _________________________________________________________________")
+        print(" /                                                                 \\")
+        print("|                                                                   |")
+        print("|                         Dungeon  Crawl!!!                         |")
+        print("|                                                                   |")
+        print(" \\_________________________________________________________________/")
+        
+        time.sleep(3)
 
         while (self.difficulty != 'easy' and self.difficulty != 'medium' and self.difficulty != 'hard'):
             print("Choose a difficulty: (easy, medium, hard)")
@@ -153,8 +166,8 @@ class player:
         self.name = input()
         print()
 
-        while (self.race != 'dwarf' and self.race != 'elf' and self.race != 'orc' and self.race != 'man'):
-            print("What are you? (dwarf, elf, orc, man)")
+        while (self.race not in raceList):
+            print("What are you? (dwarf, elf, orc, human)")
             self.race = input()
             print()
         if (self.race == 'orc'):
@@ -187,7 +200,7 @@ class player:
                 print("two healing potions", end='')
             else:
                 print("one healing potion", end='')
-            print(" (Enter h outside of combat), and one lethal poison (enter k during a fight).\n")
+            print(" (Enter h outside of combat),\n and one lethal poison (enter k during a fight).\n")
             print("These potion refill when you rest.\n")
         
         elif (self.pclass == 'bard'):
@@ -200,16 +213,16 @@ class player:
                 self.strongAttack = input()
                 print()
             if (self.race != 'elf'):
-                print("Once per level, outside of combat, you may choose to change your enhanced weapon type by entering 'b'\n")
+                print("Once per level, outside of combat,\n you may choose to change your enhanced weapon type by entering 'b'\n")
             else:
-                print("Twice per level, outside of combat, you may choose to change your enhanced weapon type by entering 'b'\n")
+                print("Twice per level, outside of combat,\n you may choose to change your enhanced weapon type by entering 'b'\n")
         
         elif (self.pclass == 'duelist'):
             self.strongAttack = 's'
             self.classKit1 = 2
             if (self.race == 'elf'):
                 self.classKit1 += 1
-            print("As a duelist, you are skilled with a sword, and can counter enemies for a chance to take no damage.")
+            print("As a duelist, you are skilled with a sword,\n and can counter enemies for a chance to take no damage.")
             print("To counter attack, enter c during a fight.\n")
         
         elif (self.pclass == 'shinobi'):
@@ -217,7 +230,7 @@ class player:
             self.classKit1 = 1
             if (self.race == 'elf'):
                 self.classKit1 += 1
-            print("As a shinobi, you are skilled with a bow, and can always escape a fight back to the entrance of the dungeon (enter e during a fight).")
+            print("As a shinobi, you are skilled with a bow,\n and can always escape a fight back to the entrance of the dungeon (enter e during a fight).")
             print("To use your shinobi escape, you are required to rest.")
             if (self.race != 'elf'):
                 print("Once per rest, you can stealth attack an enemy (enter k during a fight) to mitigate damage.\n")
@@ -230,9 +243,9 @@ class player:
             self.classKit2 = 1
             if (self.race == 'elf'):
                 self.classKit1 += 1
-            print("As a wizard, you have a few spells you can use, and two types of spells slots, high slots and low slots")
-            print("You can cast Fire Ball (enter f during a fight) expending one of", self.classKit1, "low spell slots that don't regenerate until you level up.\n")
-            print("You can also use Invisibility (enter i during a fight), or Explosion (enter e outside of combat), expending one of", self.classKit2, "high spell slots\n")
+            print("As a wizard, you have a few spells you can use,\n and two types of spells slots, high slots and low slots")
+            print("You can cast Fire Ball (enter f during a fight),\n expending one of", self.classKit1, "low spell slots that don't regenerate until you level up.\n")
+            print("You can also use Invisibility (enter i during a fight),\n or Explosion (enter e outside of combat), expending one of", self.classKit2, "high spell slots\n")
         
         elif (self.pclass == 'knight'):
             self.increase = 'p'
@@ -242,21 +255,21 @@ class player:
                 self.classKit1 += 1
             self.maxHP += 4
             self.HP = self.maxHP
-            print("As a knight, you are very hardy, you have a little more HP than other classes, and you are much stronger with a sword\n")
+            print("As a knight, you are very hardy, you have a little more HP than other classes,\n and you are much stronger with a sword\n")
             if (self.race != 'elf'):
                 print("Once per rest, you can power attack your enemy (enter p during a fight), ", end='')
             else:
                 print("Twice per rest, you can power attack your enemy (enter p during a fight), ", end='')
-            print("taking more damage, but you will progress more than one space in the direction you were moving.\n")
+            print("taking more damage,\n but you will progress more than one space in the direction you were moving.\n")
 
         elif (self.pclass == 'thief'):
             self.strongAttack = 'b'
             self.classKit1 = 1
             if (self.race == 'elf'):
                 self.classKit1 += 1
-                print("As a thief, you are skilled with a bow and hard to detect, twice per rest, you can sneak attack an enemy, taking zero damage in the fight\n")
+                print("As a thief, you are skilled with a bow and hard to detect,\n twice per rest, you can sneak attack an enemy, taking zero damage in the fight\n")
             else:
-                print("As a thief, you are skilled with a bow and hard to detect, once per rest, you can sneak attack an enemy, taking zero damage in the fight\n")
+                print("As a thief, you are skilled with a bow and hard to detect,\n once per rest, you can sneak attack an enemy, taking zero damage in the fight\n")
             print("To sneak attack, enter h during a fight.\n")
         
         elif (self.pclass == 'spell-slinger'):
@@ -282,18 +295,18 @@ class player:
         print("  O : where you are currently")
         print("  - : a space you have yet to explore")
         print("  # : a space that cannot be entered, it is an obsticle in your path\n")
-        print("the final boss of each floor will be found somewhere along the furthest column to the right, and you will start in the top left corner of the dungeon\n")
+        print("the final boss of each floor will be found somewhere along the furthest column to the right,\n and you will start in the top left corner of the dungeon\n")
         print("   you -> [O] [-] [#] [-] [-] <- boss?")
         print("          [-] [-] [-] [-] [-] <- boss?\n")
         print("In order to level up and move on to the next floor of the dungeon, defeat the boss on the other end\n")
-        print("Each time you enter a space you have not previously explored, you will be faced by some sort of monster that you must fight\n")
+        print("Each time you enter a space you have not previously explored,\n you will be faced by some sort of monster that you must fight\n")
         print("In a fight, you can use a sword (Enter s), a bow (Enter b), or magic (Enter m);")
         print(" each monster is specifically weak to one of these.\n")
-        print("You may flee to the entrance of the dungeon, regaining your HP and class abilities, by entering f outside of combat.\n")
-        print("Outside of a fight, you may enter i to see what items and abilities you have collected on your adventure!\n")
+        print("You may flee to the entrance of the dungeon,\n regaining your HP and class abilities, by entering f outside of combat.\n")
+        print("Outside of a fight,\n you may enter i to see what items and abilities you have collected on your adventure!\n")
         print("u makes you go up, d makes you go down, r makes you go right, and l makes you go left\n")
-        print("In the dungeon, you can make camp (enter c outside of combat) to regain some HP before continuing on,\n")
-        print("you must flee to regain the supplies to make camp again\n")
+        print("In the dungeon, you can make camp (enter c outside of combat) to regain some HP before continuing on.\n")
+        print("You must flee to regain the supplies to make camp again\n")
         print("Enter q to quit\n")
         return
     
@@ -440,7 +453,7 @@ class player:
             return 1
         else:
             self.killCount = 0
-            print("You revive at the beginning of this floor, but you have lost all of your monster essences.")
+            print("You revive at the beginning of this floor,\n but you have lost all of your monster essences.")
             self.rest(1000)
             return 0
 
