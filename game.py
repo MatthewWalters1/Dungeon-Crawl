@@ -1,5 +1,6 @@
 import random
 import os
+import time
 
 filler = '='
 classlist = ['fighter', 'spell-slinger', 'dark-knight', 'knight', 'thief', 'bard', 'duelist', 'wizard', 'witch', 'shinobi']
@@ -95,6 +96,7 @@ class player:
             print("|                                                                   |")
             print(" \\_________________________________________________________________/")
         else:
+            os.system("color 0A")
             print("  _________________________________________________________________")
             print(" /                                                                 \\")
             print("|                                                                   |")
@@ -123,6 +125,19 @@ class player:
     #the intro sequence gets all the customizable character information from the player, 
     # doesn't allow them to enter options that don't exist
     def intro(self):
+        print("Welcome to...")
+        time.sleep(3)
+        print("Matthew Walters' original game...")
+        time.sleep(3)
+        print(" ___                                          ____                     _   ")
+        print("|   \  _  _  _ _    __ _   ___  ___  _ _     /  __| _ _  __ _ __ __ __| |  ")
+        print("| |) || || || ' \  / _` | / -_)/ _ \| ' \    | (__ | '_|/ _` |\ V  V /| |  ")
+        print("|___/  \_,_||_||_| \__, | \___|\___/|_||_|    \___||_|  \__,_| \_/\_/ |_|  ")
+        print("                    |___/                                                  ")
+        for i in range(3):
+            print("__________________________________________________________________________")
+            time.sleep(1)
+
         while (self.difficulty != 'easy' and self.difficulty != 'medium' and self.difficulty != 'hard'):
             print("Choose a difficulty: (easy, medium, hard)")
             self.difficulty = input()
@@ -716,7 +731,7 @@ def discovery(upgrades):
         print("  _________________________________________________________________")
         print(" /                                                                 \\")
         print("|                                                                   |")
-        print("|                You discovered the Bow of Heroes!!!                |")
+        print("|             You have discovered the Bow of Heroes!!!              |")
         print("|                                                                   |")
         print(" \\_________________________________________________________________/")
         print()
@@ -726,7 +741,7 @@ def discovery(upgrades):
         print("  _________________________________________________________________")
         print(" /                                                                 \\")
         print("|                                                                   |")
-        print("|                You discovered the Staff of Argon!!!               |")
+        print("|             You have discovered the Staff of Argon!!!             |")
         print("|                                                                   |")
         print(" \\_________________________________________________________________/")
         print()
