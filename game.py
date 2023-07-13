@@ -88,7 +88,14 @@ class player:
                 pclass += self.pclass[char].upper()
             else:
                 pclass += self.pclass[char]
-        print(self.name, "[ Level", self.level, race, pclass, "] :")
+        suf = 'th'
+        if self.level == 1:
+            suf = 'st'
+        elif self.level == 2:
+            suf = 'nd'
+        elif self.level == 3:
+            suf = 'rd'
+        print(self.name, "[", str(self.level) + suf, "Level", race, pclass, "] :")
         HP = self.HP / self.maxHP * 80
         print("HP: [", end='')
         for i in range(80):
@@ -676,39 +683,39 @@ def calcDamage(pc, m, attackType, upgrades):
             print("Spell slots remaining:", pc.classKit1)
         elif (attackType == 'i'):
             damage = 0
-            print("You cast Invisibility\n")
+            print("You cast Invisibility!\n")
             pc.classKit2 -= 1
             print("High spell slots remaining:", pc.classKit2)
         elif (attackType == 'h'):
             pc.classKit1 -= 1
             damage = 0
-            print("\nYou sneak attack the monster!")
+            print("You sneak attack the monster!\n")
             print("You can sneak attack", pc.classKit1, "more monsters.")
         elif (attackType == 'p'):
-            print("\nYou rush the monster!")
+            print("You plow through several monsters!\n")
             pc.classKit1 -= 1
-            killCount += pc.level
+            pc.killCount += pc.level
             damage -= pc.level
             print("You can power attack", pc.classKit1, "more monsters.")
         elif (attackType == 'k'):
             damage /= 8
             if (pc.pclass == "witch"):
                 pc.classKit2 -= 1
-                print("\nYou poison the monster!")
+                print("You poison the monster!\n")
                 print("Poison remaining:", pc.classKit2)
             elif (pc.pclass == "shinobi"):
                 pc.classKit1 -= 1
-                print("You assassinate the monster!")
+                print("You assassinate the monster!\n")
                 print("You can stealth attack", pc.classKit1, "more monsters.")
         elif (attackType == 'c'):
             chance = random.randint(0,pc.level - 1)
             if (chance != 2):
                 damage = 0
-                print("You counter attack the monster!")
+                print("You counter attack the monster!\n")
                 pc.classKit1 -= 1
                 print("You can counter", pc.classKit1, "more monsters.")
             else:
-                print("You failed to counter the monster!")
+                print("You failed to counter the monster!\n")
                 if (upgrades[3] == 1 and upgrades[4] == 1 and upgrades[5] == 1 and pc.level > 4):
                     damage /= 4
                 else:
@@ -783,6 +790,24 @@ def heal(pc, gameState):
     if (pc.HP > (power * pc.maxHP)):
         pc.HP = power * pc.maxHP
     print("HP is", pc.HP)
+
+def powerAttack(dungeon, move, level, killGoal, row, col):
+    for step in range(0, level):
+        dungeon[row][col] *= -1
+        if (row > 0 and move == 'u'):
+            if (dungeon[row - 1][col] != -50):
+                row -= 1
+        elif (row < level and move == 'd'):
+            if (dungeon[row + 1][col] != -50):
+                row += 1
+        elif (col < killGoal - 1 and move == 'r'):
+            if (dungeon[row][col + 1] != -50):
+                col += 1
+        elif (col > 0 and move == 'l'):
+            if (dungeon[row][col - 1] != -50):
+                col -= 1
+
+    return dungeon, row, col
 
 #inventory shows the player which weapon is their most effective, whether they've collected legendary weapons,
 # if they've camped or not this level, and how many uses they have for their class abilities
@@ -939,6 +964,7 @@ def main():
 
             #the player is using a move action, thus moving to a new room, and possibly starting Combat 
             if (gameState in moves):
+                move = gameState
                 if (gameState == 'u'):
                     row -= 1
                 elif (gameState == 'd'):
@@ -973,6 +999,9 @@ def main():
                     if (gameState not in options):
                         print("You can't do that...")
                 
+                if gameState == 'p':
+                    dungeon, row, col = powerAttack(dungeon, move, level, pc.killGoal, row, col)
+
                 damage = calcDamage(pc, m, gameState, upgrades)
                 #this is for the shinobi's escape, it resets the dungeon, obsticles and all, 
                 # unless I add some functionality to buildDungeon, so I can reset the dead to their original monsters, but not move the obsticles around
