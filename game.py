@@ -130,6 +130,7 @@ class player:
         while (self.difficulty != 'easy' and self.difficulty != 'medium' and self.difficulty != 'hard'):
             print("Choose a difficulty: (easy, medium, hard)")
             self.difficulty = input()
+            print()
         if self.difficulty == 'easy':
             self.diffRating = 1
         elif self.difficulty == 'medium':
@@ -144,6 +145,7 @@ class player:
         while (self.race != 'dwarf' and self.race != 'elf' and self.race != 'orc' and self.race != 'man'):
             print("What are you? (dwarf, elf, orc, man)")
             self.race = input()
+            print()
         if (self.race == 'orc'):
             self.maxHP += 4
             self.HP = self.maxHP
@@ -185,6 +187,7 @@ class player:
             print("Choose one now...(s/b/m)")
             while (self.strongAttack != 's' and self.strongAttack != 'b' and self.strongAttack != 'm'):
                 self.strongAttack = input()
+                print()
             if (self.race != 'elf'):
                 print("Once per level, outside of combat, you may choose to change your enhanced weapon type by entering 'b'\n")
             else:
@@ -351,6 +354,7 @@ class player:
             self.increase = ''
             while (self.increase not in choices):
                 self.increase = input()
+                print()
                 if (self.increase not in choices):
                     print("That's not one of your options...")
             if (self.increase == "p"):
@@ -392,6 +396,7 @@ class player:
             print("Would you like to increase your Potions(h) or Poisons(k)?")
             while (self.increase not in choices):
                 self.increase = input()
+                print()
                 if (self.increase not in choices):
                     print("That's not one of your options...")
             if (self.increase == 'h'):
@@ -417,6 +422,7 @@ class player:
         gameState = ''
         while (gameState != 'y' and gameState != 'n'):
             gameState = input()
+            print()
         if (gameState == 'n'):
             self.gameOver()
             return 1
@@ -493,9 +499,10 @@ def buildDungeon(pc):
 def resetDungeon(pc, dungeon):
     for i in range(0, pc.level + 1):
         for j in range(0, pc.killGoal):
-            if (i != 0 and j != 0):
+            if (i != 0 or j != 0):
                 if (dungeon[i][j] < 0 and dungeon[i][j] != -50):
                     dungeon[i][j] *= -1
+    return dungeon
 
 #this just takes the dungeon and describes to the player where they are, 
 # where they've been, where they can't go (obsticles), but doesn't identify monsters
@@ -830,6 +837,14 @@ def explode():
     print(" \\_________________________________________________________________/")
     print()
 
+def colorScreen(level):
+    if level >= 8:
+            os.system("color 0D")
+    elif level >= 5:
+        os.system("color 0E")
+    else:
+        os.system("color 0A")
+
 #here's the actual game, it is structured in this way:
 ### forEach level from 1 to endGame:
 ###     build the dungeon
@@ -868,12 +883,7 @@ def main():
     pc.setup()
 
     for level in range(1, pc.endgame):
-        if level >= 8:
-            os.system("color 0D")
-        elif level >= 5 and level < 8:
-            os.system("color 0E")
-        else:
-            os.system("color 0A")
+        colorScreen(level)
         #set up for discovering legendary weapons, specifically once per floor if requirements are met
         disc = 0      
         #build the level with random numbers
@@ -893,6 +903,7 @@ def main():
             reloop = 0
             while (gameState not in options):
                 gameState = input()
+                print()
                 if (gameState not in options):
                     print("You can't do that...")
                     reloop += 1
@@ -933,6 +944,7 @@ def main():
                 gameState = ''
                 while (gameState not in options):
                     gameState = input()
+                    print()
                     if (gameState not in options):
                         print("You can't do that...")
                 
@@ -959,6 +971,7 @@ def main():
                     quitter = pc.youDied()
                     if (quitter):
                         return
+                    colorScreen(level)
                     row = 0
                     col = 0
                     dungeon = buildDungeon(pc)
@@ -989,6 +1002,9 @@ def main():
                     pc.strongAttack = ''
                     while (pc.strongAttack not in basics):
                         pc.strongAttack = input()
+                        print()
+                        if (pc.strongAttack not in basics):
+                            print("You can't do that...")
                 
                 elif (gameState == 'e'):
                     explode()
@@ -1006,6 +1022,9 @@ def main():
                     gameState = ''
                     while (gameState != 'y' and gameState != 'n'):
                         gameState = input()
+                        print()
+                        if (gameState != 'y' and gameState != 'n'):
+                            print("You can't do that...")
                     if (gameState == 'y'):
                         pc.gameOver()
                         return
