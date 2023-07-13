@@ -1,8 +1,15 @@
 # Dungeon-Crawl
-in order to play this game, all you need is a c++ compiler, and a terminal  
-to compile it, run "g++ -o game game.cpp"  
+## MAJOR UPDATE:
+#### I've translated the game's code to Python, cutting out legacy code and B.S. that stuck during development.
+#### The Python version is functionally the same, but from now on I'll be updating that version, not the original.
 
+in order to play this game, all you need is a c++ compiler, and a terminal  
+to compile it, run "g++ -o game game.cpp" 
 to play, "./game"  
+
+to run the Python version, all you need is the python interpreter, I run it in the latest version of Python3
+to play, open a command prompt, and run "python game.py"
+
 if your terminal supports the "color" command, it will turn black with green characters  
 
 Gameplay  
@@ -58,7 +65,7 @@ The "easy" classes actually have 2 weapons that are better than average
   
 Each class beyond this point has class items or skills that are restored when they level up or flee.  
   
-The "moderate" classes have one class item or skill, that gets better as they level up, and one single stronger weapon  
+The "moderate" classes have one class item or skill that gets better as they level up, and one single stronger weapon  
   Knight: strong with Swords, and begin the game with Power Attack, but can switch to war cry or back to power attack during level ups  
     Power Attack - When you are in combat, whichever direction you stepped into this room,  
       you will continue and kill every monster for a few rooms (increasing with level),  
