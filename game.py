@@ -71,6 +71,7 @@ class player:
         self.maxh = 0
         self.maxk = 0
 
+    #print the player's score, name, level, a health bar, and their numeric HP/maxHP
     def printHP(self):
         score = self.finscore - (10000 - 1000*(self.level - 1))
         score *= self.diffRating
@@ -84,11 +85,13 @@ class player:
             else:
                 print("-", end='')
         print("]", str(self.HP) + '/' + str(self.maxHP))
+        return
     
+    #The player has either reached endgame, or chose to end the game early, printing their final score
     def gameOver(self):
         score = self.finscore - (10000 - 1000*(self.level - 1))
         score *= self.diffRating
-        if (self.level != 10):
+        if (self.level != self.endgame):
             print("  _________________________________________________________________")
             print(" /                                                                 \\")
             print("|                                                                   |")
@@ -106,6 +109,8 @@ class player:
         print("YOUR FINAL SCORE:", score)
         return
     
+    #the player heals a significant amount of HP, this can go beyond their maxHP, if they died, the dungeon gets re-built, 
+    ## otherwise, it just resets
     def rest(self, scorehit):
         self.finscore -= scorehit
         self.HP += self.killCount * 6 * self.level
@@ -115,9 +120,12 @@ class player:
 
         if (scorehit != 1000):
             print("You flee the dungeon and rest, using your monster essenses to regain your strength...")
-        print("But, the dungeon has shifted") 
+        else:
+            print("And, it appears the dungeon has shifted...")
+        return 
 
-    #the intro sequence gets all the customizable character information from the player, doesn't allow them to enter options that don't exist
+    #the intro sequence gets all the customizable character information from the player, 
+    # doesn't allow them to enter options that don't exist
     def intro(self):
         while (self.difficulty != 'easy' and self.difficulty != 'medium' and self.difficulty != 'hard'):
             print("Choose a difficulty: (easy, medium, hard)")
@@ -147,6 +155,8 @@ class player:
             print("                    (advanced: wizard, witch, shinobi)")
             self.pclass = input()
         print()
+    
+        return
 
     #setup is huge, it has to give you different sets of items and describe to the player what they can do during the game, 
     # some of these can probably be condensed, but it would also require conditions for what to print out, so be careful in doing that
@@ -250,6 +260,31 @@ class player:
             self.strongAttack2 = 'm'
             print("As a dark-knight, you are quite skilled with the sword and magic attacks.\n")
     
+        print("Dungeons will look something like this:")
+        print("[X] [X] [X] [O] [-]")
+        print("[-] [-] [#] [-] [-]")
+        print("[-] [-] [-] [-] [-]")
+        print("  X : a room where you have already been, and killed the monster")
+        print("  O : where you are currently")
+        print("  - : a space you have yet to explore")
+        print("  # : a space that cannot be entered, it is an obsticle in your path\n")
+        print("the final boss of each floor will be found somewhere along the furthest column to the right, and you will start in the top left corner of the dungeon\n")
+        print("   you -> [O] [-] [#] [-] [-] <- boss?")
+        print("          [-] [-] [-] [-] [-] <- boss?\n")
+        print("In order to level up and move on to the next floor of the dungeon, defeat the boss on the other end\n")
+        print("Each time you enter a space you have not previously explored, you will be faced by some sort of monster that you must fight\n")
+        print("In a fight, you can use a sword (Enter s), a bow (Enter b), or magic (Enter m);")
+        print(" each monster is specifically weak to one of these.\n")
+        print("You may flee to the entrance of the dungeon, regaining your HP and class abilities, by entering f outside of combat.\n")
+        print("Outside of a fight, you may enter i to see what items and abilities you have collected on your adventure!\n")
+        print("u makes you go up, d makes you go down, r makes you go right, and l makes you go left\n")
+        print("In the dungeon, you can make camp (enter c outside of combat) to regain some HP before continuing on,\n")
+        print("you must flee to regain the supplies to make camp again\n")
+        print("Enter q to quit\n")
+        return
+    
+    #levelUp means that you finished the floor and go to the next one, your maxHP increases, and HP is set to it,
+    # your classKit1 or 2 items are scaled to your level, and you are reminded about them, and how many times you can use them
     def levelUp(self):
         print("  _________________________________________________________________")
         print(" /                                                                 \\")
@@ -366,7 +401,10 @@ class player:
             self.classKit1 = self.maxh
             self.classKit2 = self.maxk
             print("You now have", self.classKit1, "potions, and", self.classKit2, "poisons.")
+        
+        return
 
+    #this happens when the player's HP hit's zero, they can continue, hurting their score; or end the game, calling gameover
     def youDied(self):
         print("  _________________________________________________________________")
         print(" /                                                                 \\")
@@ -395,7 +433,11 @@ class monster:
         self.weakness = ''
         self.bossType = 0
 
-    #there will only be one monster object, the game loop will call "m = monsterLibrary(level, damage)" for every room the player enters, using the damage of the monster
+    #there will only be one monster object, 
+    # the game loop will call "m = monsterLibrary(level, damage)" for every room the player enters, 
+    #  using the damage of that space to generate the monster,
+    ### the bossType variable ensures that only when you get to the Boss Space, 
+    ###  you encounter the monster that you were informed about at the beginning of the level
     def monsterLibrary(self, level, damage, bossType):
         index = level - 1
         jindex = damage
@@ -421,10 +463,12 @@ class monster:
 
         return isBoss
 
-
+#buildDungeon uses the player's info to generate a new floor of the dungeon, 
+# it's just a 2D array of integers, used by monsterLibrary to identify the creature
 def buildDungeon(pc):
     # Dungeon Key:
     ### Regular Monster [int from 1 to 10]
+    ### dead monster    [int from -1 to -10]
     ### Obsticle        [-50]
     ### Boss Monster    [100]
     dungeon = []
@@ -444,6 +488,17 @@ def buildDungeon(pc):
 
     return dungeon
 
+#When the player flees the dungeon, I'd rather they encounter the same monsters in the same order, as if they respawned,
+# instead of resetting the dungeon completely, including re-structuring the obsticles
+def resetDungeon(pc, dungeon):
+    for i in range(0, pc.level + 1):
+        for j in range(0, pc.killGoal):
+            if (i != 0 and j != 0):
+                if (dungeon[i][j] < 0 and dungeon[i][j] != -50):
+                    dungeon[i][j] *= -1
+
+#this just takes the dungeon and describes to the player where they are, 
+# where they've been, where they can't go (obsticles), but doesn't identify monsters
 def printDungeon(dungeon, row, col, level, killGoal):
     for i in range(0, level + 1):
         for j in range(0, killGoal):
@@ -452,7 +507,7 @@ def printDungeon(dungeon, row, col, level, killGoal):
                 print("O", end='')
             elif dungeon[i][j] == -50:
                 print("#", end='')
-            elif dungeon[i][j] == -1:
+            elif dungeon[i][j] < 0:
                 print("X", end='')
             else:
                 print("-", end='')
@@ -460,6 +515,8 @@ def printDungeon(dungeon, row, col, level, killGoal):
         print()
     return
 
+#this takes the player's position in the dungeon and their class (pclass) to determine which actions they can take outside of combat,
+# it returns a list of possible inputs that will be accepted in the game loop, as well as printing those same inputs to the screen
 def getOptions(pc, row, col, dungeon):
     print("How would you like to proceed? (", end='')
     options = []
@@ -498,6 +555,9 @@ def getOptions(pc, row, col, dungeon):
 
     return options
 
+#this does the same thing as getOptions, but for combat, asking the player which attack they'd like to use,
+# since each class works differently, it has to be able to print a lot of different options,
+#  it also set's boss monster's damage to 15, instead of 10, this is for balance, since bosses didn't really deal enough damage
 def preAttack(pc, m, disc, upgrades):
     if (m.damage == 10):
         m.damage = 15
@@ -544,6 +604,8 @@ def preAttack(pc, m, disc, upgrades):
     print(")")
     return options
 
+#this calculates how much damage the player takes based on the game's difficulty level, 
+# the monster's power level, the player's attack choice, what upgrades they've received so far, and they're race and class benefits
 def calcDamage(pc, m, attackType, upgrades):
     damage = m.damage
     if pc.difficulty == 'easy':
@@ -629,8 +691,11 @@ def calcDamage(pc, m, attackType, upgrades):
     
     return int(damage)
 
+#discovery is used to give the player a boost when they defeat a boss,
+# they receive one of three legendary weapons, which further reduce damage when that weapon is the right choice,
+# these also effect certain class's abilities, like the wizard's fireball, which is more effective if you have all 3 artifacts
 def discovery(upgrades):
-    flag = False
+    flag = 2
     if (upgrades[0] == 1 and upgrades[3] != 1):
         upgrades[3] = 1
         upgrades[0] = 0
@@ -641,8 +706,6 @@ def discovery(upgrades):
         print("|                                                                   |")
         print(" \\_________________________________________________________________/")
         print()
-    elif (upgrades[0] == 1 and upgrades[3] == 1):
-        flag = True
     elif (upgrades[1] == 1 and upgrades[4] != 1):
         upgrades[4] = 1
         upgrades[1] = 0
@@ -653,8 +716,6 @@ def discovery(upgrades):
         print("|                                                                   |")
         print(" \\_________________________________________________________________/")
         print()
-    elif (upgrades[1] == 1 and upgrades[4] == 1):
-        flag = True
     elif (upgrades[2] == 1 and upgrades[5] != 1):
         upgrades[5] = 1
         upgrades[2] = 0
@@ -665,10 +726,13 @@ def discovery(upgrades):
         print("|                                                                   |")
         print(" \\_________________________________________________________________/")
         print()
-    elif (upgrades[2] == 1 and upgrades[5] == 1):
-        flag = True
+    else:
+        flag = 0
     return flag, upgrades
 
+#this function is used when the player has a healing ability and uses it, or when they decide to camp,
+# it is less effective than fleeing, but doesn't destroy your progress
+### camping is also more effective allowing the player to heal all the way to double their maxHP, unlike class abilities
 def heal(pc, gameState):
     pc.HP += (pc.killCount * 4 * pc.level)
     power = 1
@@ -688,6 +752,8 @@ def heal(pc, gameState):
         pc.HP = power * pc.maxHP
     print("HP is", pc.HP)
 
+#inventory shows the player which weapon is their most effective, whether they've collected legendary weapons,
+# if they've camped or not this level, and how many uses they have for their class abilities
 def inventory(pc, upgrades):
     print("You have...")
     #Potion
@@ -753,6 +819,8 @@ def inventory(pc, upgrades):
 
     return
 
+#this function could use player and dungeon information to carry out the wizard's explosion ability,
+# but I really just wanted to get the massive text block out of the main function
 def explode():
     print("  _________________________________________________________________")
     print(" /                                                                 \\")
@@ -761,38 +829,36 @@ def explode():
     print("|                                                                   |")
     print(" \\_________________________________________________________________/")
     print()
-    
-def bigOutput():
-    print("Dungeons will look something like this:")
-    print("[X] [X] [X] [O] [-]")
-    print("[-] [-] [#] [-] [-]")
-    print("[-] [-] [-] [-] [-]")
-    print("  X : a room where you have already been, and killed the monster")
-    print("  O : where you are currently")
-    print("  - : a space you have yet to explore")
-    print("  # : a space that cannot be entered, it is an obsticle in your path\n")
-    print("the final boss of each floor will be found somewhere along the furthest column to the right, and you will start in the top left corner of the dungeon\n")
-    print("   you -> [O] [-] [#] [-] [-] <- boss?")
-    print("          [-] [-] [-] [-] [-] <- boss?\n")
-    print("In order to level up and move on to the next floor of the dungeon, defeat the boss on the other end\n")
-    print("Each time you enter a space you have not previously explored, you will be faced by some sort of monster that you must fight\n")
-    print("In a fight, you can use a sword (Enter s), a bow (Enter b), or magic (Enter m);")
-    print(" each monster is specifically weak to one of these.\n")
-    print("You may flee to the entrance of the dungeon, regaining your HP and class abilities, by entering f outside of combat.\n")
-    print("Outside of a fight, you may enter i to see what items and abilities you have collected on your adventure!\n")
-    print("u makes you go up, d makes you go down, r makes you go right, and l makes you go left\n")
-    print("In the dungeon, you can make camp (enter c outside of combat) to regain some HP before continuing on,\n")
-    print("you must flee to regain the supplies to make camp again\n")
-    print("Enter q to quit\n")
-    return
 
+#here's the actual game, it is structured in this way:
+### forEach level from 1 to endGame:
+###     build the dungeon
+###     determine the boss
+###     while player is not at the boss
+###         printHP
+###         printDungeon
+###         ask player for next action
+###         if they move, move them
+###             if space not negative (dead), reveal the monster
+###             player chooses attack type or class ability
+###             calculate damage
+###         if they don't move, handle the action and restart While loop
+###         if  : player dies, continue screen, 
+###             if they choose to continue, restart For loop (player's level stays the same), decrease player's score, 
+###             else print score and end
+###         else: multiply space by -1, manage magic items, increase killcount, restart While loop
+###     end while
+###     if we got here, they already fought the boss
+###     player's level += 1
+###     since they level up, increase maxHP, set HP to max, reset position to [0][0], restart For loop
+### end for
 def main():
     #set color to black with green characters
     os.system("color 0A")
     #initialize all of our variables, including the player
     pc = player()
     m = monster()
-    disc = False
+    disc = 0
     upgrades = [0,0,0,0,0,0]
     row = 0
     col = 0
@@ -800,33 +866,16 @@ def main():
     #big bits of text, character creation, description of the game's processes
     pc.intro()
     pc.setup()
-    bigOutput()
 
-    #gameplay loop structure
-    ### forEach level:
-    ###     build the dungeon
-    ###     determine the boss
-    ###     while player is not at the boss
-    ###         printHP
-    ###         printDungeon
-    ###         ask player for next action
-    ###         if they move, move them
-    ###             if space != -1 (dead), reveal the monster
-    ###             player chooses attack type or class ability
-    ###             calculate damage
-    ###         if they don't move, handle the action and restart While loop
-    ###         if  : player dies, continue screen, 
-    ###             if they choose to continue, restart For loop (player's level stays the same), decrease player's score, 
-    ###             else print score and end
-    ###         else: set current space to -1, manage magic items, increase killcount, restart While loop
-    ###     end while
-    ###     if we got here, they already fought the boss
-    ###     player's level += 1
-    ###     since they level up, increase maxHP, set HP to max, reset position to [0][0], restart For loop
-
-    for level in range(1,pc.endgame):
+    for level in range(1, pc.endgame):
+        if level >= 8:
+            os.system("color 0D")
+        elif level >= 5 and level < 8:
+            os.system("color 0E")
+        else:
+            os.system("color 0A")
         #set up for discovering legendary weapons, specifically once per floor if requirements are met
-        disc = False        
+        disc = 0      
         #build the level with random numbers
         dungeon = buildDungeon(pc)
         #determine the boss type, so that you can tell the player their intended final fight for the level,
@@ -863,23 +912,23 @@ def main():
                 elif (gameState == 'r'):
                     col += 1
                 #if they've already killed a monster in a particular room, don't continue the loop, because the rest of this loop is Combat
-                if (dungeon[row][col] == -1):
+                if (dungeon[row][col] < 0 and dungeon[row][col] != -50):
                     print("The monster here is already dead.")
                     continue
                 #if they have not killed the monster, look it up, prepare for battle!
                 #check if the monster is the boss, for the while loop, so they can level up
                 isBoss = m.monsterLibrary(level, dungeon[row][col], bossType)
                 #check if the monster is any type of boss, so we can handle item discovery
-                if (m.damage == 10) and disc != True:
+                if (m.damage == 10) and disc == 0:
                     if(m.weakness == 's' and upgrades[3] != 1):
                         upgrades[0] = 1
-                        disc = True
+                        disc = 1
                     elif (m.weakness == 'b' and upgrades[4] != 1):
                         upgrades[1] = 1
-                        disc = True
+                        disc = 1
                     elif (m.weakness == 'm' and upgrades [5] != 1):
                         upgrades[2] = 1
-                        disc = True
+                        disc = 1
                 options = preAttack(pc, m, disc, upgrades)
                 gameState = ''
                 while (gameState not in options):
@@ -894,10 +943,10 @@ def main():
                     upgrades[0] = 0
                     upgrades[1] = 0
                     upgrades[2] = 0
-                    disc = False
+                    disc = 0
                     row = 0
                     col = 0
-                    dungeon = buildDungeon(pc)
+                    dungeon = resetDungeon(pc, dungeon)
                     continue
                 print("You take", damage, "damage.")
                 pc.HP -= damage
@@ -906,6 +955,7 @@ def main():
                 
                 ### The Player Has Died
                 if (pc.HP <= 0):
+                    os.system("color 0C")
                     quitter = pc.youDied()
                     if (quitter):
                         return
@@ -915,16 +965,16 @@ def main():
                     continue
                 
                 ### The Player has not died, thus defeating the monster, now they take damage and maybe discover items
-                dungeon[row][col] = -1
+                dungeon[row][col] *= -1
                 pc.killCount += 1
                 print("You now have", pc.killCount, "monster essenses.")
-                if (disc == True):
+                if (disc == 1):
                     disc, upgrades = discovery(upgrades)
             else:
                 if (gameState == 'f'):
                     row = 0
                     col = 0
-                    dungeon = buildDungeon(pc)
+                    dungeon = resetDungeon(pc, dungeon)
                     pc.rest(200)
                 
                 elif (gameState == 'w' or gameState == 'c' or gameState == 'h'):
@@ -950,7 +1000,7 @@ def main():
                                     if (dungeon[i][j] != 100 and dungeon[i][j] != -50):
                                         dungeon[i][j] = -1
                                         pc.killCount += 1
-                
+
                 elif (gameState == 'q'):
                     print("ARE YOU SURE??? (y/n)")
                     gameState = ''
@@ -965,11 +1015,10 @@ def main():
         print("You use the soul of", m.name, "to grow stronger.")
         row = 0
         col = 0
-        disc = False
+        disc = 0
         pc.levelUp()
 
     pc.gameOver()
-
     return
 
 if __name__ == "__main__":
