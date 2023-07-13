@@ -631,7 +631,7 @@ def calcDamage(pc, m, attackType, upgrades):
     if attackType in basics:
         if m.weakness == attackType:
             damage /= 2
-            print("\nIt's super effective!\n")
+            print("It's super effective!\n")
             if pc.strongAttack == attackType:
                 damage /= 2
             elif pc.strongAttack2 == attackType:
