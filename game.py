@@ -14,14 +14,14 @@ monList = [
         "the Orc Squadron", "the Dragon", "the Army of Sorcerers"],
     ["a spriggan warlord", "a griffin", "a monstrous owlbear", "a water elemental", "a phoenix", "a frost giant", "a manticore", \
         "a necromancer", "a storm wizard", "a giant snake", "the Feral Werewolf", "the Royal Griffin", "the Vampire"],
-    ["a bog hatcher", "a squadron of orcs", "a drider", "a persistent phantom", "an eldritch monstrocity", "a dragon", "a war sloth", \
+    ["a basilisk", "a squadron of orcs", "a drider", "a persistent phantom", "an eldritch monstrocity", "a dragon", "a war sloth", \
         "an army of sorcerers", "a flying octopus", "an old griffin", "the Horde of Trolls", "the Elder Dragon", "the Mindflayer"],
-    ["a hound of Topedus", "a feral werewolf", "a wight stalker", "a royal griffin", "a graveknight", "a stone dragon", "a greatslug", \
+    ["a hound of Topedus", "a feral werewolf", "a wight stalker", "a royal griffin", "a graveknight", "a stone dragon", "a beholder", \
         "a shadow serpent", "an uthul", "an orc warg rider", "the Werewolf Pack", "the Ancient Wyrm", "the Vampire Lord"],
     ["a moonflower", "a mindflayer", "a mohrg spawn", "a warg captain", "a hellcat", "a horde of trolls", "a blade mantis", 
         "a king shadow serpent", "a jabberwock", "a lich", "Topedus the Mouse God", "the Sea Monster", "the Arch Demon"],
     ["a pit fiend", "an undead army", "a harpy queen", "a mind flayer overlord", "a void worm", "a werewolf pack", \
-        "an ifrit", "a vampire lord", "an erlking", "a sea monster", "Okesh, the Orc World Eater", "Toroloth, the Calamity Dragon", \
+        "an ifrit", "a vampire lord", "a wendigo", "a sea monster", "Okesh, the Orc World Eater", "Toroloth, the Calamity Dragon", \
             "Vuen, the Elder Goddes of Death"]
 ]
 weakList = [
