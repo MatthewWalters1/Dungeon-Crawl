@@ -12,7 +12,7 @@ monList = [
     ["a werewolf", "a young dragon", "an orc shaman", "an orc duelist", "a shadow tiger", "a Frost Giant", "a Griffin", "a Rock Giant"],
     ["a flame elemental", "an ettin", "an ancient draugr", "an undead horde", "a poltergeist", \
         "the Orc Squadron", "the Dragon", "the Army of Sorcerers"],
-    ["a spriggan warlord", "a griffin", "a monstrous owlbear", "a water elemental", " a phoenix", "a frost giant", "a manticore", \
+    ["a spriggan warlord", "a griffin", "a monstrous owlbear", "a water elemental", "a phoenix", "a frost giant", "a manticore", \
         "a necromancer", "a storm wizard", "a giant snake", "the Feral Werewolf", "the Royal Griffin", "the Vampire"],
     ["a bog hatcher", "a squadron of orcs", "a drider", "a persistent phantom", "an eldritch monstrocity", "a dragon", "a war sloth", \
         "an army of sorcerers", "a flying octopus", "an old griffin", "the Horde of Trolls", "the Elder Dragon", "the Mindflayer"],
