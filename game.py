@@ -401,7 +401,7 @@ class player:
                 self.classKit2 = 1
                 if (self.race == "elf"):
                     self.classKit2 += 1
-                print("per rest, you can war cry, restoring your strength.")
+                print(bv[bindex], "per rest, you can war cry, restoring your strength.")
         #bard
         elif (self.pclass == "bard"):
             self.classKit1 = 1
