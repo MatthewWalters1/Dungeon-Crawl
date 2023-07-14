@@ -10,17 +10,19 @@ monList = [
     ["a ghoul", "an oozing mass", "an orc fighter", "a banshee", "a giant", "an Orc Commander", "a Cyclops", "a Witch"],
     ["a troll", "a stone golum", "an orc archer", "a hag", "a saber leopard", "a Giant Snake", "an Ettin", "a Necromancer"],
     ["a werewolf", "a young dragon", "an orc shaman", "an orc duelist", "a shadow tiger", "a Frost Giant", "a Griffin", "a Rock Giant"],
-    ["a flame elemental", "an ettin", "an ancient draugr", "an undead horde", "a poltergeist", "the Orc Squadron", "the Dragon", "the Army of Sorcerers"],
-    ["a spriggan warlord", "a griffin", "a monstrous owlbear", "a water elemental", " a phoenix", "a frost giant", "a manticore", "a necromancer", \
-        "a storm wizard", "a giant snake", "the Feral Werewolf", "the Royal Griffin", "the Vampire"],
-    ["a bog hatcher", "a squadron of orcs", "a drider", "a persistent phantom", "a gogiteth", "a dragon", "a nilith", "an army of sorcerers", \
-        "a shoggti", "an old griffin", "the Horde of Trolls", "the Elder Dragon", "the Mindflayer"],
-    ["a hound of Topedus", "a feral werewolf", "a wight stalker", "a royal griffin", "a graveknight", "a stone dragon", "a grothlut", \
+    ["a flame elemental", "an ettin", "an ancient draugr", "an undead horde", "a poltergeist", \
+        "the Orc Squadron", "the Dragon", "the Army of Sorcerers"],
+    ["a spriggan warlord", "a griffin", "a monstrous owlbear", "a water elemental", " a phoenix", "a frost giant", "a manticore", \
+        "a necromancer", "a storm wizard", "a giant snake", "the Feral Werewolf", "the Royal Griffin", "the Vampire"],
+    ["a bog hatcher", "a squadron of orcs", "a drider", "a persistent phantom", "an eldritch monstrocity", "a dragon", "a war sloth", \
+        "an army of sorcerers", "a flying octopus", "an old griffin", "the Horde of Trolls", "the Elder Dragon", "the Mindflayer"],
+    ["a hound of Topedus", "a feral werewolf", "a wight stalker", "a royal griffin", "a graveknight", "a stone dragon", "a greatslug", \
         "a shadow serpent", "an uthul", "an orc warg rider", "the Werewolf Pack", "the Ancient Wyrm", "the Vampire Lord"],
-    ["a moonflower", "a mindflayer", "a mohrg spawn", "a warg captain", "a hellcat", "a horde of trolls", "a irlgaunt", "a king shadow serpent", \
-        "a jabberwock", "a lich", "Topedus the Mouse God", "the Sea Monster", "the Arch Demon"],
-    ["a pit fiend", "an undead army", "a harpy queen", "a mind flayer overlord", "a void worm", "a werewolf pack", "an ifrit", "a vampire lord", "an erlking", \
-        "a sea monster", "the Orc World Eater", "the Calamity Dragon", "the Elder Goddes of Death"]
+    ["a moonflower", "a mindflayer", "a mohrg spawn", "a warg captain", "a hellcat", "a horde of trolls", "a blade mantis", 
+        "a king shadow serpent", "a jabberwock", "a lich", "Topedus the Mouse God", "the Sea Monster", "the Arch Demon"],
+    ["a pit fiend", "an undead army", "a harpy queen", "a mind flayer overlord", "a void worm", "a werewolf pack", \
+        "an ifrit", "a vampire lord", "an erlking", "a sea monster", "Okesh, the Orc World Eater", "Toroloth, the Calamity Dragon", \
+            "Vuen, the Elder Goddes of Death"]
 ]
 weakList = [
     ['m', 'b', 's', 'b', 's', 's', 'b', 'm'],
