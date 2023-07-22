@@ -138,6 +138,54 @@ class player:
             self.HP = self.maxHP
         self.killCount = 0
 
+        if (self.pclass == 'witch'):
+            self.strongAttack = 'm'
+            self.classKit1 = self.maxh
+            self.classKit2 = self.maxk
+        
+        elif (self.pclass == 'bard'):
+            self.classKit1 = 1
+            if (self.race == 'elf'):
+                self.classKit1 += 1
+        
+        elif (self.pclass == 'duelist'):
+            self.strongAttack = 's'
+            self.classKit1 = 2 * self.level
+            if (self.race == 'elf'):
+                self.classKit1 += 1
+    
+        elif (self.pclass == 'shinobi'):
+            self.strongAttack = 'b'
+            self.classKit1 = 1
+            if (self.race == 'elf'):
+                self.classKit1 += 1
+        
+        elif (self.pclass == 'wizard'):
+            self.strongAttack = 'm'
+            self.classKit1 = 2 + self.level
+            self.classKit2 = 1
+            if (self.level > 6):
+                self.classKit2 += 1
+            if (self.race == 'elf'):
+                self.classKit1 += 1
+        
+        elif (self.pclass == 'knight'):
+            self.strongAttack = 's'
+            if self.increase == 'p':
+                self.classKit1 = 1
+                if (self.race == 'elf'):
+                    self.classKit1 += 1
+            else:
+                self.classKit2 = 1
+                if (self.race == 'elf'):
+                    self.classKit2 += 1
+
+        elif (self.pclass == 'thief'):
+            self.strongAttack = 'b'
+            self.classKit1 = 1 * self.level
+            if (self.race == 'elf'):
+                self.classKit1 += 1
+
         if (scorehit != 1000):
             print("You flee the dungeon and rest,\n using your monster essenses to regain your strength...")
         else:
