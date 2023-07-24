@@ -558,7 +558,7 @@ class monster:
 def buildDungeon(pc):
     # Dungeon Key:
     ### Regular Monster [int from 1 to 10]
-    ### dead monster    [int from -1 to -10]
+    ### Dead Monster    [int from -1 to -10]
     ### Obsticle        [-50]
     ### Boss Monster    [100]
     dungeon = []
@@ -843,6 +843,8 @@ def heal(pc, gameState):
         pc.HP = power * pc.maxHP
     print("HP is", pc.HP)
 
+#powerAttack is used by the knight class, pushing the player further into the dungeon, as long as they don't hit an obsticle
+# they will continue in the direction of their previous move, it is generally most effective when moving to the right
 def powerAttack(dungeon, move, level, killGoal, row, col):
     for step in range(0, level):
         dungeon[row][col] *= -1
@@ -939,6 +941,9 @@ def explode():
     print(" \\_________________________________________________________________/")
     print()
 
+#colorScreen is used to call the color function in the command prompt, at first, the screen is black with green letters,
+# at level 5+, the letters are yellow, at 8+, the letters are purple. Originally they were red, but the letters turn red on player death, so 
+#  it felt like you died when actually you were just leveling up to 8 or higher, so they became purple to prevent this confusion.
 def colorScreen(level):
     if level >= 8:
             os.system("color 0D")
@@ -962,12 +967,12 @@ def colorScreen(level):
 ###         if they don't move, handle the action and restart While loop
 ###         if  : player dies, continue screen, 
 ###             if they choose to continue, restart For loop (player's level stays the same), decrease player's score, 
-###             else print score and end
+###             else print score and end game
 ###         else: multiply space by -1, manage magic items, increase killcount, restart While loop
 ###     end while
 ###     if we got here, they already fought the boss
 ###     player's level += 1
-###     since they level up, increase maxHP, set HP to max, reset position to [0][0], restart For loop
+###     since they level up, increase maxHP, set HP to max, handle other levelUp bonuses, reset position to [0][0], restart For loop
 ### end for
 def main():
     #set color to black with green characters
@@ -987,7 +992,7 @@ def main():
     for level in range(1, pc.endgame):
         colorScreen(level)
         #set up for discovering legendary weapons, specifically once per floor if requirements are met
-        disc = 0      
+        disc = 0
         #build the level with random numbers
         dungeon = buildDungeon(pc)
         #determine the boss type, so that you can tell the player their intended final fight for the level,
@@ -1029,7 +1034,7 @@ def main():
                 if (dungeon[row][col] < 0 and dungeon[row][col] != -50):
                     print("The monster here is already dead.")
                     continue
-                #if they have not killed the monster, look it up, prepare for battle!
+                #if the monster is not dead, look it up, prepare for battle!
                 #check if the monster is the boss, for the while loop, so they can level up
                 isBoss = m.monsterLibrary(level, dungeon[row][col], bossType)
                 #check if the monster is any type of boss, so we can handle item discovery
@@ -1043,18 +1048,23 @@ def main():
                     elif (m.weakness == 'm' and upgrades [5] != 1):
                         upgrades[2] = 1
                         disc = 1
+                #get player's attack/class ability options
                 options = preAttack(pc, m, disc, upgrades)
                 gameState = ''
+                #get player's input for their attack
                 while (gameState not in options):
                     gameState = input()
                     print()
                     if (gameState not in options):
                         print("You can't do that...")
                 
+                #handle power attack's movement
                 if gameState == 'p':
                     dungeon, row, col = powerAttack(dungeon, move, level, pc.killGoal, row, col)
-
+                
+                #calculate damage to deal to the player, according to the monster and player's decision
                 damage = calcDamage(pc, m, gameState, upgrades)
+                
                 #this is for the shinobi's escape, it resets the dungeon, obsticles and all, 
                 # unless I add some functionality to buildDungeon, so I can reset the dead to their original monsters, but not move the obsticles around
                 if (gameState == 'e'):
@@ -1066,8 +1076,12 @@ def main():
                     col = 0
                     dungeon = resetDungeon(pc, dungeon)
                     continue
+                
+                #actually deal the damage to the player
                 print("You take", damage, "damage.")
                 pc.HP -= damage
+                
+                #without this, you never saw how close you might have come to dying vs. the boss, so the extra print is nice
                 if (isBoss):
                     pc.printHP()
                 
@@ -1090,19 +1104,30 @@ def main():
                 print("You now have", pc.killCount, "monster essenses.")
                 if (disc == 1):
                     disc, upgrades = discovery(upgrades)
+            
+            #the player did not make a move action, handle the action, combat will not occur this iteration
             else:
+                #this is the flee action, they reset their position and all monsters respawn.
+                # fleeing is preferable to dying, but it still hurts the player's score, in addition, you can heal beyond your max health,
+                #  there is actually no limit to how high your health can get when you flee, 
+                #   just in case the only path through the dungeon is unachievable with max health.
                 if (gameState == 'f'):
                     row = 0
                     col = 0
                     dungeon = resetDungeon(pc, dungeon)
                     pc.rest(200)
                 
+                #this is not like fleeing, does not hurt your score, but can only be done a certain number of times per level, and only by some player classes
                 elif (gameState == 'w' or gameState == 'c' or gameState == 'h'):
                     heal(pc, gameState)
                 
+                #this shows the player's inventory, and reminds them of the current Boss monster they are going after
                 elif (gameState == 'i'):
                     inventory(pc, upgrades)
+                    m.monsterLibrary(level, 100, bossType)
+                    print("\nRemember, to complete this floor of the dungeon, you must defeat", m.name, "!")
                 
+                #this is the bard's skill to change their strong attack, they generally can only do this once per level
                 elif (gameState == 'b'):
                     pc.classKit1 -= 1
                     print("Which attack type do you wish to enhance? (s/b/m)")
@@ -1112,7 +1137,9 @@ def main():
                         print()
                         if (pc.strongAttack not in basics):
                             print("You can't do that...")
-                
+
+                #this is the wizard's explosion skill, it kills a large number of enemies to the player's right, it cannot kill the boss monster,
+                # it also does not destroy obsticles in the dungeon
                 elif (gameState == 'e'):
                     explode()
                     pc.classKit2 -= 1
@@ -1123,7 +1150,8 @@ def main():
                                     if (dungeon[i][j] != 100 and dungeon[i][j] != -50):
                                         dungeon[i][j] = -1
                                         pc.killCount += 1
-
+                
+                #this is how you quit the game, it makes sure the player actually wants to quit before it ends the game.
                 elif (gameState == 'q'):
                     print("ARE YOU SURE??? (y/n)")
                     gameState = ''
@@ -1144,6 +1172,7 @@ def main():
         disc = 0
         pc.levelUp()
 
+    #if you reach this point, you won! and the game will end after showing you your score
     pc.gameOver()
     return
 
