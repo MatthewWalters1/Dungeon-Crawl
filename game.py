@@ -22,7 +22,7 @@ monList = [
         "a king shadow serpent", "a jabberwock", "a lich", "Topedus the Mouse God", "the Sea Monster", "the Arch Demon"],
     ["a pit fiend", "an undead army", "a harpy queen", "a mind flayer overlord", "a void worm", "a werewolf pack", \
         "an ifrit", "a vampire lord", "a wendigo", "a sea monster", "Okesh, the Orc World Eater", "Toroloth, the Calamity Dragon", \
-            "Vuen, the Elder Goddes of Death"]
+            "Vuen, the Elder Goddess of Death"]
 ]
 weakList = [
     ['m', 'b', 's', 'b', 's', 's', 'b', 'm'],
@@ -61,7 +61,6 @@ class player:
         self.expwidth = 4
         self.exheight = 1
         #strings used to add modifiers to your character
-        self.difficulty = ''
         self.diffRating = 0
         self.pclass = ''
         self.race = ''
@@ -210,13 +209,14 @@ class player:
         
         time.sleep(3)
 
-        while (self.difficulty != 'easy' and self.difficulty != 'medium' and self.difficulty != 'hard'):
+        difficulty = ''
+        while (difficulty != 'easy' and difficulty != 'medium' and difficulty != 'hard'):
             print("Choose a difficulty: (easy, medium, hard)")
-            self.difficulty = input()
+            difficulty = input()
             print()
-        if self.difficulty == 'easy':
+        if difficulty == 'easy':
             self.diffRating = 1
-        elif self.difficulty == 'medium':
+        elif difficulty == 'medium':
             self.diffRating = 2
         else:
             self.diffRating = 3
@@ -649,7 +649,7 @@ def getOptions(pc, row, col, dungeon):
 #this does the same thing as getOptions, but for combat, asking the player which attack they'd like to use,
 # since each class works differently, it has to be able to print a lot of different options,
 #  it also set's boss monster's damage to 15, instead of 10, this is for balance, since bosses didn't really deal enough damage
-def preAttack(pc, m, disc, upgrades):
+def preAttack(pc, m):
     if (m.damage == 10):
         m.damage = 15
     m.damage = m.damage * 2 * pc.level
@@ -699,9 +699,9 @@ def preAttack(pc, m, disc, upgrades):
 # the monster's power level, the player's attack choice, what upgrades they've received so far, and they're race and class benefits
 def calcDamage(pc, m, attackType, upgrades):
     damage = m.damage
-    if pc.difficulty == 'easy':
+    if pc.diffRating == 1:
         damage -= 2
-    elif pc.difficulty == 'hard':
+    elif pc.diffRating == 3:
         damage += 2
     
     if damage <= 0:
@@ -725,11 +725,15 @@ def calcDamage(pc, m, attackType, upgrades):
             pc.finscore -= 50 * pc.diffRating
         if (upgrades[basics.index(attackType) + 3] == 1):
             damage /= 2
+        if (upgrades[basics.index(attackType) + 3] == 3):
+            damage /= 8
     else:
         if (attackType == 'f'):
             damage /= 8
             if (upgrades[3] == 1 and upgrades[4] == 1 and upgrades[5] == 1 and pc.level > 4):
                 damage /= 4
+            if ((upgrades[3] == 3 or upgrades[4] == 3 or upgrades[5] == 3) and pc.level > 7):
+                damage /= 8
             print("You cast Fire Ball!\n")
             pc.classKit1 -= 1
             print("Spell slots remaining:", pc.classKit1)
@@ -784,7 +788,7 @@ def calcDamage(pc, m, attackType, upgrades):
 
 #discovery is used to give the player a boost when they defeat a boss,
 # they receive one of three legendary weapons, which further reduce damage when that weapon is the right choice,
-# these also effect certain class's abilities, like the wizard's fireball, which is more effective if you have all 3 artifacts
+#  these also effect certain class's abilities, like the wizard's fireball, which is more effective if you have all 3 artifacts
 def discovery(upgrades):
     flag = 2
     if (upgrades[0] == 1 and upgrades[3] != 1):
@@ -814,6 +818,44 @@ def discovery(upgrades):
         print(" /                                                                 \\")
         print("|                                                                   |")
         print("|             You have discovered the Staff of Argon!!!             |")
+        print("|                                                                   |")
+        print(" \\_________________________________________________________________/")
+        print()
+    else:
+        flag = 0
+    return flag, upgrades
+
+#bigDiscovery is similar to discovery, but these items are much more beneficial, and are limited to 1 per game on hard mode, 
+# but you can get 2 of them on medium mode, and all 3 in easy mode
+def bigDiscovery(upgrades):
+    flag = 3
+    if (upgrades[0] == 3 and upgrades[3] != 3):
+        upgrades[3] = 3
+        upgrades[0] = 0
+        print("  _________________________________________________________________")
+        print(" /                                                                 \\")
+        print("|                                                                   |")
+        print("|       You have discovered Getauskaath, the Phalanx Render!!!      |")
+        print("|                                                                   |")
+        print(" \\_________________________________________________________________/")
+        print()
+    elif (upgrades[1] == 3 and upgrades[4] != 3):
+        upgrades[4] = 3
+        upgrades[1] = 0
+        print("  _________________________________________________________________")
+        print(" /                                                                 \\")
+        print("|                                                                   |")
+        print("|         You have discovered Orokriegr, the God Hunter!!!          |")
+        print("|                                                                   |")
+        print(" \\_________________________________________________________________/")
+        print()
+    elif (upgrades[2] == 3 and upgrades[5] != 3):
+        upgrades[5] = 3
+        upgrades[2] = 0
+        print("  _________________________________________________________________")
+        print(" /                                                                 \\")
+        print("|                                                                   |")
+        print("|      You have discovered Throshfrein, the Catalyst of Doom!!!     |")
         print("|                                                                   |")
         print(" \\_________________________________________________________________/")
         print()
@@ -875,8 +917,10 @@ def inventory(pc, upgrades):
     #Experience Points
     print(" ", pc.killCount, "monster essenses")
     #Sword stuffs
-    if (upgrades[3]):
+    if (upgrades[3] == 1):
         print("  the Sword of Destiny", end='')
+    elif (upgrades[3] == 3):
+        print("  Getauskaath, the Phalanx Render", end='')
     elif (pc.strongAttack == 's' or pc.strongAttack2 == 's'):
         print("  a good sword", end='')
     else:
@@ -886,8 +930,10 @@ def inventory(pc, upgrades):
     else:
         print()
     #Bow stuffs
-    if (upgrades[4]):
+    if (upgrades[4] == 1):
         print("  the Bow of Heroes", end='')
+    elif (upgrades[4] == 3):
+        print("  Orokriegr, the God Hunter", end='')
     elif (pc.strongAttack == 'b' or pc.strongAttack2 == 'b'):
         print("  a longbow", end='')
     else:
@@ -897,8 +943,10 @@ def inventory(pc, upgrades):
     else:
         print()
     #Magic stuffs
-    if (upgrades[5]):
+    if (upgrades[5] == 1):
         print("  the Staff of Argon", end='')
+    elif (upgrades[5] == 3):
+        print("  Throshfrein, the Catalyst of Doom", end='')
     elif (pc.strongAttack == 'm' or pc.strongAttack2 == 'm'):
         print("  a powerful magic staff", end='')
     else:
@@ -989,10 +1037,17 @@ def main():
     pc.intro()
     pc.setup()
 
+    counter = 1
+    if (pc.diffRating == 2):
+        counter += 1
+    elif (pc.diffRating == 1):
+        counter += 2
+
     for level in range(1, pc.endgame):
         colorScreen(level)
         #set up for discovering legendary weapons, specifically once per floor if requirements are met
-        disc = 0
+        if (disc != 4):
+            disc = 0
         #build the level with random numbers
         dungeon = buildDungeon(pc)
         #determine the boss type, so that you can tell the player their intended final fight for the level,
@@ -1039,17 +1094,32 @@ def main():
                 isBoss = m.monsterLibrary(level, dungeon[row][col], bossType)
                 #check if the monster is any type of boss, so we can handle item discovery
                 if (m.damage == 10) and disc == 0:
-                    if(m.weakness == 's' and upgrades[3] != 1):
+                    #this is the first level of weapon upgrades, these can be found as early as level 1
+                    if(m.weakness == 's' and upgrades[3] == 0):
                         upgrades[0] = 1
                         disc = 1
-                    elif (m.weakness == 'b' and upgrades[4] != 1):
+                    elif (m.weakness == 'b' and upgrades[4] == 0):
                         upgrades[1] = 1
                         disc = 1
-                    elif (m.weakness == 'm' and upgrades [5] != 1):
+                    elif (m.weakness == 'm' and upgrades [5] == 0):
                         upgrades[2] = 1
                         disc = 1
+                    
+                    #this is the second level of weapon upgrades, the player can only receive 1 or 2 of them if playing in hard or medium mode, respectively.
+                    # They are only accessible at level 7 and up, and decrease damage significantly more than their predecessors.
+                    if (level >= 7):
+                        if (m.weakness == 's' and upgrades[3] == 1):
+                            disc = 3
+                            upgrades[0] = 3
+                        elif (m.weakness == 'b' and upgrades[4] == 1):
+                            disc = 3
+                            upgrades[1] = 3
+                        elif (m.weakness == 'm' and upgrades[5] == 1):
+                            disc = 3
+                            upgrades[2] = 3
+
                 #get player's attack/class ability options
-                options = preAttack(pc, m, disc, upgrades)
+                options = preAttack(pc, m)
                 gameState = ''
                 #get player's input for their attack
                 while (gameState not in options):
@@ -1071,7 +1141,8 @@ def main():
                     upgrades[0] = 0
                     upgrades[1] = 0
                     upgrades[2] = 0
-                    disc = 0
+                    if (disc != 4):
+                        disc = 0
                     row = 0
                     col = 0
                     dungeon = resetDungeon(pc, dungeon)
@@ -1104,6 +1175,12 @@ def main():
                 print("You now have", pc.killCount, "monster essenses.")
                 if (disc == 1):
                     disc, upgrades = discovery(upgrades)
+                if (disc == 3):
+                    disc, upgrades = bigDiscovery(upgrades)
+                    if (disc != 0):
+                        counter -= 1
+                        if (counter <= 0):
+                            disc = 4
             
             #the player did not make a move action, handle the action, combat will not occur this iteration
             else:
@@ -1125,7 +1202,7 @@ def main():
                 elif (gameState == 'i'):
                     inventory(pc, upgrades)
                     m.monsterLibrary(level, 100, bossType)
-                    print("\nRemember, to complete this floor of the dungeon, you must defeat", m.name, "!")
+                    print("\nRemember, to complete this floor of the dungeon, you must defeat", m.name + "!")
                 
                 #this is the bard's skill to change their strong attack, they generally can only do this once per level
                 elif (gameState == 'b'):
@@ -1169,7 +1246,8 @@ def main():
         print("You use the soul of", m.name, "to grow stronger.")
         row = 0
         col = 0
-        disc = 0
+        if (disc != 4):
+            disc = 0
         pc.levelUp()
 
     #if you reach this point, you won! and the game will end after showing you your score
