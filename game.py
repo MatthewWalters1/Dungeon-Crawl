@@ -372,6 +372,19 @@ class player:
     #levelUp means that you finished the floor and go to the next one, your maxHP increases, and HP is set to it,
     # your classKit1 or 2 items are scaled to your level, and you are reminded about them, and how many times you can use them
     def levelUp(self):
+        #typical boost for all classes
+        self.maxHP += 25
+        self.HP = self.maxHP
+        self.killGoal += 2
+        self.killCount = 0
+        self.finscore += 1000 * self.diffRating
+        self.level += 1
+        self.potion = True
+        
+        #since the player has won the game, no need to tell them that theorhetically they could have more skill uses than before.
+        if (self.level == self.endgame):
+            return
+
         print("  _________________________________________________________________")
         print(" /                                                                 \\")
         print("|                                                                   |")
@@ -379,13 +392,10 @@ class player:
         print("|                                                                   |")
         print(" \\_________________________________________________________________/")
         print()
-        
+
         ### bv is for better voice, I'm trying to avoid saying something can be done "one times", instead saying it can be done once or twice per rest
         bv = ['Once', 'Twice']
         bindex = 0
-
-        self.level += 1
-        self.potion = True
 
         ### HP stuff
         #class bonus/penalty
@@ -399,13 +409,6 @@ class player:
             self.maxHP += (2 * self.level)
         elif (self.race == "elf" or self.race == "dwarf"):
             self.maxHP -= (2 * self.level)
-
-        #typical boost for all classes
-        self.maxHP += 25
-        self.HP = self.maxHP
-        self.killGoal += 2
-        self.killCount = 0
-        self.finscore += 1000 * self.diffRating
 
         ### class kit stuff
         #wizard
@@ -712,7 +715,9 @@ def calcDamage(pc, m, attackType, upgrades):
     if (pc.name == "Topedus"):
         damage = 0
 
+    #if the attack is not a class ability, just one of (s/b/m)
     if attackType in basics:
+        #if the attack is the correct one for what the monster is weak to
         if m.weakness == attackType:
             damage /= 2
             print("It's super effective!\n")
@@ -720,14 +725,16 @@ def calcDamage(pc, m, attackType, upgrades):
                 damage /= 2
             elif pc.strongAttack2 == attackType:
                 damage /= 2
+            #the upgraded weapons only affect damage if they are the right weapon to use, otherwise it would be a bit silly
+            if (upgrades[basics.index(attackType) + 3] == 1):
+                damage /= 2
+            if (upgrades[basics.index(attackType) + 3] == 3):
+                damage /= 8
         else:
             print("Not very effective...\n")
             pc.finscore -= 50 * pc.diffRating
-        if (upgrades[basics.index(attackType) + 3] == 1):
-            damage /= 2
-        if (upgrades[basics.index(attackType) + 3] == 3):
-            damage /= 8
     else:
+        #this is fireball for the wizard
         if (attackType == 'f'):
             damage /= 8
             if (upgrades[3] == 1 and upgrades[4] == 1 and upgrades[5] == 1 and pc.level > 4):
@@ -737,22 +744,26 @@ def calcDamage(pc, m, attackType, upgrades):
             print("You cast Fire Ball!\n")
             pc.classKit1 -= 1
             print("Spell slots remaining:", pc.classKit1)
+        #this is invisibility for the wizard
         elif (attackType == 'i'):
             damage = 0
             print("You cast Invisibility!\n")
             pc.classKit2 -= 1
             print("High spell slots remaining:", pc.classKit2)
+        #this is the thief's sneak attack
         elif (attackType == 'h'):
             pc.classKit1 -= 1
             damage = 0
             print("You sneak attack the monster!\n")
             print("You can sneak attack", pc.classKit1, "more monsters.")
+        #this is the knight's power attack
         elif (attackType == 'p'):
             print("You plow through several monsters!\n")
             pc.classKit1 -= 1
             pc.killCount += pc.level
             damage -= pc.level
             print("You can power attack", pc.classKit1, "more monsters.")
+        #this is the witch's poison attack, or the shinobi's assassination attack, both have the same effect on the monster's damage
         elif (attackType == 'k'):
             damage /= 8
             if (pc.pclass == "witch"):
@@ -763,6 +774,8 @@ def calcDamage(pc, m, attackType, upgrades):
                 pc.classKit1 -= 1
                 print("You assassinate the monster!\n")
                 print("You can stealth attack", pc.classKit1, "more monsters.")
+        #this is the duelist's counter attack, it has a random chance to fail, but only from level 3 onwards. 
+        # Level 3 is the point where you are most likely to fail your counter attack, since it is based on a 1 in [player's level] chance of failure
         elif (attackType == 'c'):
             chance = random.randint(0,pc.level - 1)
             if (chance != 2):
@@ -776,11 +789,13 @@ def calcDamage(pc, m, attackType, upgrades):
                     damage /= 4
                 else:
                     damage /= 2
+        #this is the shinobi's escape move, which pulls them out of combat, but resets the dungeon, like when you flee
         if attackType == 'e' and pc.pclass == 'shinobi':
             damage = 0
             print("Using your escape rope, ", end='')
             pc.rest(100)
     
+    #damage is not allowed to go negative and thus heal the player
     if (damage < 0):
         damage = 0
     
@@ -828,7 +843,7 @@ def discovery(upgrades):
 #bigDiscovery is similar to discovery, but these items are much more beneficial, and are limited to 1 per game on hard mode, 
 # but you can get 2 of them on medium mode, and all 3 in easy mode
 def bigDiscovery(upgrades):
-    flag = 3
+    flag = 1
     if (upgrades[0] == 3 and upgrades[3] != 3):
         upgrades[3] = 3
         upgrades[0] = 0
@@ -1176,8 +1191,8 @@ def main():
                 if (disc == 1):
                     disc, upgrades = discovery(upgrades)
                 if (disc == 3):
-                    disc, upgrades = bigDiscovery(upgrades)
-                    if (disc != 0):
+                    flag, upgrades = bigDiscovery(upgrades)
+                    if (flag != 0):
                         counter -= 1
                         if (counter <= 0):
                             disc = 4
@@ -1243,7 +1258,11 @@ def main():
                     
         #if you got to the boss, level up here
         #For this print, I want the bosses to have a "singular/plural" flag, so it says "the souls of", not just "the soul of", better voice and all that...
-        print("You use the soul of", m.name, "to grow stronger.")
+        print("You use the soul of", m.name, "to grow stronger", end='')
+        if (level + 1 == pc.endgame):
+            print(", and become the most powerful creature in the world!!!")
+        else:
+            print('.')
         row = 0
         col = 0
         if (disc != 4):
