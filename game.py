@@ -2,7 +2,9 @@ import random
 import os
 import time
 
+endGame = 11
 filler = '='
+
 classlist = ['fighter', 'spell-slinger', 'dark-knight', 'knight', 'thief', 'bard', 'duelist', 'wizard', 'witch', 'shinobi']
 raceList = ['elf', 'dwarf', 'human', 'orc']
 monList = [
@@ -53,8 +55,6 @@ class player:
         self.finscore = 0
         #player's kill count, this is your xp (monster essenses), which count up until you reach the goal or camp, it modifies how much you heal when you camp or flee
         self.killCount = 0
-        #the level to reach for the game to end
-        self.endgame = 11
         #determines the width of the dungeon
         self.killGoal = 5
         #determine the size of wizard explosions
@@ -109,7 +109,7 @@ class player:
     
     #The player has either reached endgame, or chose to end the game early, printing their final score
     def gameOver(self):
-        if (self.level != self.endgame):
+        if (self.level != endGame):
             print("  _________________________________________________________________")
             print(" /                                                                 \\")
             print("|                                                                   |")
@@ -381,7 +381,7 @@ class player:
         self.potion = True
         
         #since the player has won the game, no need to tell them that theorhetically they could have more skill uses than before.
-        if (self.level == self.endgame):
+        if (self.level == endGame):
             return
 
         print("  _________________________________________________________________")
@@ -531,8 +531,7 @@ class monster:
     #there will only be one monster object, 
     # the game loop will call "m = monsterLibrary(level, damage)" for every room the player enters, 
     #  using the damage of that space to generate the monster,
-    ### the bossType variable ensures that only when you get to the Boss Space, 
-    ###  you encounter the monster that you were informed about at the beginning of the level
+    ### the bossType variable ensures that you do not encounter the monster you were told to defeat at the beginning of the level, until you reach the final space
     def monsterLibrary(self, level, damage, bossType):
         index = level - 1
         jindex = damage
@@ -1060,7 +1059,7 @@ def main():
     elif (pc.diffRating == 1):
         counter += 2
 
-    for level in range(1, pc.endgame):
+    for level in range(1, endGame):
         colorScreen(level)
         #set up for discovering legendary weapons, specifically once per floor if requirements are met
         if (disc != 4):
@@ -1259,9 +1258,9 @@ def main():
                         return
                     
         #if you got to the boss, level up here
-        #For this print, I want the bosses to have a "singular/plural" flag, so it says "the souls of", not just "the soul of", better voice and all that...
+        #TO-DO: For this print, I want the bosses to have a "singular/plural" flag, so it says "the souls of", not just "the soul of", better voice and all that...
         print("You use the soul of", m.name, "to grow stronger", end='')
-        if (level + 1 == pc.endgame):
+        if (level + 1 == endGame):
             print(", and become the most powerful creature in the world!!!")
         else:
             print('.')
