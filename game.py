@@ -374,7 +374,6 @@ class player:
     def levelUp(self):
         #typical boost for all classes
         self.maxHP += 25
-        self.HP = self.maxHP
         self.killGoal += 2
         self.killCount = 0
         self.finscore += 1000 * self.diffRating
@@ -409,6 +408,9 @@ class player:
             self.maxHP += (2 * self.level)
         elif (self.race == "elf" or self.race == "dwarf"):
             self.maxHP -= (2 * self.level)
+
+        #wait until you get your race/class bonus/penalty before setting HP to max
+        self.HP = self.maxHP
 
         ### class kit stuff
         #wizard
