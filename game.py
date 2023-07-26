@@ -1372,16 +1372,21 @@ def main():
         soul = "soul"
         if (m.name in plurs):
             soul += 's'
-        print("You use the", soul, "of", m.name, "to grow stronger", end='')
+        print("\nYou use the", soul, "of", m.name, "to grow stronger", end='')
         if (level + 1 == endGame):
             print(", and become the most powerful creature in the world!!!")
         else:
             print('.')
+
         row = 0
         col = 0
         if (disc != 4):
             disc = 0
         pc.levelUp()
+        if (monMan and pc.level != endGame):
+            print()
+            monHistory(history, weakins, level + 1)
+            print()
 
     #if you reach this point, you won! and the game will end after showing you your score
     pc.gameOver()
