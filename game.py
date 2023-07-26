@@ -2,11 +2,27 @@ import random
 import os
 import time
 
+#TO-DO list: easy
+### add monster list action, so that player can check which monsters they've fought and which attacks worked/failed
+### * this list should be presented in 2 columns, the monsters they've seen in the current level on the left, and the monsters of previous levels on the right
+### * under each name or to the right of the name, print either "s" or whatever is the correct attack, or "*not m" or whatever attack they've tried.
+###    if they've made 2 incorrect attacks, it's obviously the third one, so in the monster list, don't say "*not m" and "*not b", just say "s" 
+### animate the screen so the dungeon doesn't move around all the time
+#TO-DO list: difficult
+### actually put the game in a window with graphics (pygame or pyqt)
+### get a website to display all players' usernames who have gotten a perfect 30,000 score
+###     * if I do this, I need to add some kind of blacklist filter for the player's name
+###     * in addition, I would need to check the game file to make sure the player didn't cheat
+###     * it might be okay to have duplicates, but since it's not a leaderboard, 
+###        it might just make more sense to tell the player their name is already in the hall of fame,
+###         BUT... I think the hall of fame will show your character's race and class as well, so you could have Jeremy the Orc Knight and Jeremy the Elf Witch, etc
+
 endGame = 11
 filler = '='
 
 classlist = ['fighter', 'spell-slinger', 'dark-knight', 'knight', 'thief', 'bard', 'duelist', 'wizard', 'witch', 'shinobi']
 raceList = ['elf', 'dwarf', 'human', 'orc']
+#note: if you add a boss to the monsters list that is technically plural, add their name to the plurs list in main, just before the levelUp function call
 monList = [
     ["a ghost", "a death vulture", "a goblin", "a zombie", "an ogre", "a Troll", "a Saber Leopard", "a Wraith"],
     ["a ghoul", "an oozing mass", "an orc fighter", "a banshee", "a giant", "an Orc Commander", "a Cyclops", "a Witch"],
@@ -1258,8 +1274,12 @@ def main():
                         return
                     
         #if you got to the boss, level up here
-        #TO-DO: For this print, I want the bosses to have a "singular/plural" flag, so it says "the souls of", not just "the soul of", better voice and all that...
-        print("You use the soul of", m.name, "to grow stronger", end='')
+        # but first, if the boss is plural, say they used the souls of them, not the soul of them
+        plurs = ["the Army of Sorcerers", "the Horde of Trolls", "the Werewolf Pack", "the Orc Squadron"]
+        soul = "soul"
+        if (m.name in plurs):
+            soul += 's'
+        print("You use the", soul, "of", m.name, "to grow stronger", end='')
         if (level + 1 == endGame):
             print(", and become the most powerful creature in the world!!!")
         else:
