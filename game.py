@@ -382,6 +382,7 @@ class player:
         print("u makes you go up, d makes you go down, r makes you go right, and l makes you go left\n")
         print("In the dungeon, you can make camp (enter c outside of combat) to regain some HP before continuing on.\n")
         print("You must flee to regain the supplies to make camp again\n")
+        print("You may also check your history with certain monster types, by entering m outside of combat\n")
         print("Enter q to quit\n")
         return
     
@@ -660,8 +661,9 @@ def getOptions(pc, row, col, dungeon):
     if (pc.potion == True):
         print("c/", end='')
         options.append('c')
-    print("i/q)")
+    print("i/m/q)")
     options.append('i')
+    options.append('m')
     options.append('q')
 
     return options
@@ -1010,6 +1012,54 @@ def inventory(pc, upgrades):
 
     return
 
+def monHistory(history, weakins, level):
+    #formatting: print monsters from this level in the leftmost column, labeled "Monsters from this Level" (with a buffer of 32 characters)
+    #   then, print their weaknesses to their right, under the label "Weaknesses" (10 chars)
+    #   then, print monsters from all previous levels under (Monsters from Previous Levels), with their weaknesses to the right of them (32 chars) + (10 chars)
+    newMons = {}
+    oldMons = {}
+    #create dictionaries of the monsters of this level and previous levels
+    for m in range(len(history)):
+        mon = history[m].replace("a ", "").replace("an ", "").replace("the ", "")
+        if (history[m] in monList[level - 1]):
+            newMons.update({mon: weakins[m]})
+        else:
+            if (mon[0].isupper()):
+                oldMons.update({mon: weakins[m]})
+    
+    #sort the dictionaries
+    nkeys = list(newMons.keys())
+    nkeys.sort()
+    newMons = {i: newMons[i] for i in nkeys}
+    okeys = list(oldMons.keys())
+    okeys.sort()
+    oldMons = {i: oldMons[i] for i in okeys}
+    
+    print(f'|{"Monsters from this Level":32} => {"Weaknesses":10} | {"Bosses from previous Levels":32} => {"Weaknesses":10}|')
+    for i in range(max(len(nkeys), len(okeys))):
+        COL1 = ""
+        COL2 = ""
+        COL3 = ""
+        COL4 = ""
+        if i < len(nkeys):
+            COL1 = nkeys[i]
+            COL2 = newMons[nkeys[i]]
+        if i < len(okeys):
+            COL3 = okeys[i]
+            COL4 = oldMons[okeys[i]]
+        print(f'|{COL1:32} => {COL2:10} | {COL3:32} => {COL4:10}|')
+        
+
+#this just should be a python function in general, I hate the immutable list b.s.
+def listReplace(oldList, index, newItem):
+    newList = []
+    for i in range(len(oldList)):
+        if i == index:
+            newList.append(newItem)
+        else:
+            newList.append(oldList[i])
+    return newList
+
 #this function could use player and dungeon information to carry out the wizard's explosion ability,
 # but I really just wanted to get the massive text block out of the main function
 def explode():
@@ -1064,6 +1114,10 @@ def main():
     upgrades = [0,0,0,0,0,0]
     row = 0
     col = 0
+
+    history = []
+    weakins = []
+    monMan = False
     
     #big bits of text, character creation, description of the game's processes
     pc.intro()
@@ -1161,7 +1215,7 @@ def main():
                         print("You can't do that...")
                 
                 #handle power attack's movement
-                if gameState == 'p':
+                if (gameState == 'p'):
                     dungeon, row, col = powerAttack(dungeon, move, level, pc.killGoal, row, col)
                 
                 #calculate damage to deal to the player, according to the monster and player's decision
@@ -1187,6 +1241,28 @@ def main():
                 #without this, you never saw how close you might have come to dying vs. the boss, so the extra print is nice
                 if (isBoss):
                     pc.printHP()
+
+                #regardless of whether the player dies or not, they should be able to see what they've succeeded/failed in fighting
+                ### if the monster has not been seen before
+                if (m.name not in history):
+                    history.append(m.name)
+                    if (gameState in basics and gameState == m.weakness):
+                        weakins.append(gameState)
+                    elif (gameState in basics):
+                        weakins.append("*not " + gameState)
+                    else:
+                        weakins.append("*unknown")
+                ### if the monster has been seen before, but the player hasn't figured out their weakness
+                else:
+                    weakness = weakins[history.index(m.name)]
+                    if ("*not" in weakness):
+                        weakness = weakness.replace("*not ", "")
+                        if (gameState != m.weakness and gameState != weakness):
+                            weakins = listReplace(weakins, history.index(m.name), m.weakness)
+                    elif ("*unknown" in weakness and gameState in basics and gameState != m.weakness):
+                        weakins = listReplace(weakins, history.index(m.name), "*not " + gameState)
+                    if (gameState == m.weakness and weakins[history.index(m.name)] != m.weakness):
+                        weakins = listReplace(weakins, history.index(m.name), gameState)
                 
                 ### The Player Has Died
                 if (pc.HP <= 0):
@@ -1201,9 +1277,10 @@ def main():
                     dungeon = buildDungeon(pc)
                     continue
                 
-                ### The Player has not died, thus defeating the monster, now they take damage and maybe discover items
+                ### The Player has not died, thus defeating the monster, now they take damage, add to history, and discover items
                 dungeon[row][col] *= -1
                 pc.killCount += 1
+
                 print("You now have", pc.killCount, "monster essenses.")
                 if (disc == 1):
                     disc, upgrades = discovery(upgrades)
@@ -1213,6 +1290,10 @@ def main():
                         counter -= 1
                         if (counter <= 0):
                             disc = 4
+                
+                if (monMan):
+                    print()
+                    monHistory(history, weakins, level)
             
             #the player did not make a move action, handle the action, combat will not occur this iteration
             else:
@@ -1229,6 +1310,18 @@ def main():
                 #this is not like fleeing, does not hurt your score, but can only be done a certain number of times per level, and only by some player classes
                 elif (gameState == 'w' or gameState == 'c' or gameState == 'h'):
                     heal(pc, gameState)
+
+                #this shows the player a list of monsters that they've fought, and the attacks they've used against those monsters
+                elif (gameState == 'm'):
+                    monHistory(history, weakins, level)
+                    print("\nWould you like to see your Monster Manual after every encounter? (y/n)")
+                    while (gameState != 'y' and gameState != 'n'):
+                        gameState = input()
+                    if (gameState == 'y'):
+                        print("\nOkay, your Monster Manual will always print after you defeat a monster, enter the m command again to turn it off.")
+                        monMan = True
+                    else:
+                        monMan = False
                 
                 #this shows the player's inventory, and reminds them of the current Boss monster they are going after
                 elif (gameState == 'i'):
